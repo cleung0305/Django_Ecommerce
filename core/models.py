@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.shortcuts import reverse
+from django.utils.text import slugify
 
 
 CATEGORY_CHOICES = (
@@ -22,10 +23,24 @@ class Item(models.Model):
     discount_price = models.FloatField(blank=True, null = True)
     category = models.CharField(choices=CATEGORY_CHOICES, max_length = 2)
     label = models.CharField(choices=LABEL_CHOICES, max_length = 1)
-    slug = models.SlugField(default='test-product-0')
+    slug = models.SlugField(blank = True, null = True, unique = True)
 
     def __str__(self):
         return self.title
+
+    def _generate_unique_slug(self):
+        num = 1
+        slug = slugify(self.title)
+        unique_slug = '{}-{}'.format(slug, num)
+        while Item.objects.filter(slug=unique_slug).exists():
+            unique_slug = '{}-{}'.format(slug, num)
+            num += 1
+        return unique_slug
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = self._generate_unique_slug()
+        super().save(*args, **kwargs)
 
     def get_abs_url(self):
         return reverse("core:product", kwargs={
