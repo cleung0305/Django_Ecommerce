@@ -1,13 +1,16 @@
-<footer class="page-footer text-center font-small mt-4 wow fadeIn">
+{% load crispy_forms_tags %}
 
-    <form method = "POST">
-      <div class="messages"></div>
-      <div class="controls">
-            {% csrf_token %}
-            {{ contact_form.as_p }}
-          <button type="submit" class="btn btn-outline-white">Send Message</button>
-      </div>
-    </form>
+<footer class="page-footer text-center font-small mt-4 wow fadeIn">
+    <div class="pt-2 pb-2">
+      <form method = "POST">
+        <div class="messages mt-2 mb-2">Contact Us:</div>
+        <div class="controls">
+              {% csrf_token %}
+              {{ contact_form|crispy }}
+            <button type="submit" class="btn btn-outline-white mt-4">Send Message</button>
+        </div>
+      </form>
+    </div>
 
     <!--Call to action-->
     <div class="pt-4">
