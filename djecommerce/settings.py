@@ -91,3 +91,9 @@ SITE_ID = 1
 
 DEFAULT_FROM_EMAIL = 'loklok12614@gmail.com'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+#Login redirect
+LOGIN_REDIRECT_URL = "/"
+
+#crispy forms
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

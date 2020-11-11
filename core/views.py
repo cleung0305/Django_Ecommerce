@@ -9,6 +9,7 @@ from .models import *
 
 class HomeView(ListView):
     model = Item
+    paginate_by = 20
     template_name = "home.html"
 
     def post(self, request, *args, **kwargs):

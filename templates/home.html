@@ -1,203 +1,194 @@
 {% extends "base.html" %}
 {% load static %}
 
-<body>
+<head>
+  <style type="text/css">
+    .category-nav-item:hover{
+      background-color: rgba(233, 233, 233, 0.205);
+    }
+    .category-nav-item:hover span{
+      color: rgba(255, 255, 255, 0.808);
+    }
+  </style>
+</head>
+
+{% block head_title %}
+Home
+{% endblock head_title %}
 
   <!--Main layout-->
 {% block content %}
-
-  <!--Carousel Wrapper-->
+  {% comment %} <!--Carousel Wrapper-->
   {% include 'snippets/carouselWrapper-snippet.html' %}
-  <!--/.Carousel Wrapper-->
+  <!--/.Carousel Wrapper--> {% endcomment %}
 
-  <main>
-    <div class="container">
+  <div class="container pt-3">
 
-      <!--Navbar-->
-      <nav class="navbar navbar-expand-lg navbar-dark mdb-color lighten-3 mt-3 mb-5">
+    <!--Navbar-->
+    <nav class="navbar navbar-expand-lg navbar-dark mdb-color lighten-3 mt-3 mb-5">
 
-        <!-- Navbar brand -->
-        <span class="navbar-brand">Categories:</span>
+      <!-- Navbar brand -->
+      <span class="navbar-brand">Categories:</span>
 
-        <!-- Collapse button -->
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
-          aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
+      <!-- Collapse button -->
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
+        aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-        <!-- Collapsible content -->
-        <div class="collapse navbar-collapse" id="basicExampleNav">
+      <!-- Collapsible content -->
+      <div class="collapse navbar-collapse" id="basicExampleNav">
 
-          <!-- Links -->
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item active">
-              <a class="nav-link" href="#">All
-                <span class="sr-only">(current)</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Shirts</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Sport wears</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Outwears</a>
-            </li>
-
-          </ul>
-          <!-- Links -->
-
-          <form class="form-inline">
-            <div class="md-form my-0">
-              <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-            </div>
-          </form>
-        </div>
-        <!-- Collapsible content -->
-
-      </nav>
-      <!--/.Navbar-->
-
-      <!--Section: Products v.3-->
-      <section class="text-center mb-4">
-
-        <!--Grid row-->
-        <div class="row wow fadeIn">
-
-          {% for item in object_list %}
-          
-          <!--Grid column-->
-          <div class="col-lg-3 col-md-6 mb-4">
-
-            <!--Card-->
-            <div class="card">
-
-              <!--Card image-->
-              <div class="view overlay">
-                <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/12.jpg" class="card-img-top"
-                  alt="">
-                <a href="{{ item.get_abs_url }}">
-                  <div class="mask rgba-white-slight"></div>
-                </a>
-              </div>
-              <!--Card image-->
-
-              <!--Card content-->
-              <div class="card-body text-center">
-                <!--Category & Title-->
-                {% comment %} <a href="" class="grey-text">
-                  <h5>{{ item.get_category_display}}</h5>
-                </a> {% endcomment %}
-                <h5>
-                  <strong>
-                    <a href="{{ item.get_abs_url }}" class="dark-grey-text">{{ item.title }}
-                    <br>
-                      <span class="badge badge-pill {{ item.get_label_display }}-color">NEW</span>
-                      {% if item.discount_price %}
-                        <span class="badge badge-pill info-color">Discount</span>
-                      {% endif %}
-                    </a>
-                  </strong>
-                </h5>
-
-                {% if item.discount_price %}
-                  <span class="font-weight-bold grey-text mr-1">
-                    <del>${{ item.price }}</del>
-                  </span>
-                  <span class="font-weight-bold red-text" style="font-size:30px;">
-                    ${{ item.discount_price }}
-                  </span>
-                {% else %}
-                  <span class="font-weight-bold blue-text" style="font-size:30px;">
-                    <strong>
-                      ${{ item.price }}
-                    </strong>
-                  </span>
-                {% endif %}
-
-              </div>
-              <!--Card content-->
-
-            </div>
-            <!--Card-->
-
-          </div>
-          <!--Grid column-->
-
-          {% endfor %}
-        </div>
-        <!--Grid row-->
-
-      </section>
-      <!--Section: Products v.3-->
-
-      <!--Pagination-->
-      <nav class="d-flex justify-content-center wow fadeIn">
-        <ul class="pagination pg-blue">
-
-          <!--Arrow left-->
-          <li class="page-item disabled">
-            <a class="page-link" href="#" aria-label="Previous">
-              <span aria-hidden="true">&laquo;</span>
-              <span class="sr-only">Previous</span>
-            </a>
-          </li>
-
-          <li class="page-item active">
-            <a class="page-link" href="#">1
+        <!-- Links -->
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item category-nav-item active">
+            <a class="nav-link" href="#">
+              <span class="clearfix d-none d-sm-inline-block"> All </span>
               <span class="sr-only">(current)</span>
             </a>
           </li>
-          <li class="page-item">
-            <a class="page-link" href="#">2</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="#">3</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="#">4</a>
-          </li>
-          <li class="page-item">
-            <a class="page-link" href="#">5</a>
-          </li>
-
-          <li class="page-item">
-            <a class="page-link" href="#" aria-label="Next">
-              <span aria-hidden="true">&raquo;</span>
-              <span class="sr-only">Next</span>
+          <li class="nav-item category-nav-item">
+            <a class="nav-link" href="#">
+              <span class="clearfix d-none d-sm-inline-block"> Shirts </span>
             </a>
           </li>
+          <li class="nav-item category-nav-item">
+            <a class="nav-link" href="#">
+              <span class="clearfix d-none d-sm-inline-block"> Sport wears </span>
+            </a>
+          </li>
+          <li class="nav-item category-nav-item">
+            <a class="nav-link" href="#">
+              <span class="clearfix d-none d-sm-inline-block"> Outwears </span>
+            </a>
+          </li>
+
         </ul>
-      </nav>
-      <!--Pagination-->
+        <!-- Links -->
 
-    </div>
+        <form class="form-inline">
+          <div class="md-form my-0">
+            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+          </div>
+        </form>
+      </div>
+      <!-- Collapsible content -->
+
+    </nav>
+    <!--/.Navbar-->
+
+    <!--Section: Products v.3-->
+    <section class="text-center mb-4">
+
+      <!--Grid row-->
+      <div class="row wow fadeIn">
+
+        {% for item in object_list %}
+        
+        <!--Grid column-->
+        <div class="col-lg-3 col-md-6 mb-4">
+
+          <!--Card-->
+          <div class="card">
+
+            <!--Card image-->
+            <div class="view overlay">
+              <img src="https://mdbootstrap.com/img/Photos/Horizontal/E-commerce/Vertical/12.jpg" class="card-img-top"
+                alt="">
+              <a href="{{ item.get_abs_url }}">
+                <div class="mask rgba-white-slight"></div>
+              </a>
+            </div>
+            <!--Card image-->
+
+            <!--Card content-->
+            <div class="card-body text-center">
+              <!--Category & Title-->
+              {% comment %} <a href="" class="grey-text">
+                <h5>{{ item.get_category_display}}</h5>
+              </a> {% endcomment %}
+              <h5>
+                <strong>
+                  <a href="{{ item.get_abs_url }}" class="dark-grey-text">{{ item.title }}
+                  <br>
+                    <span class="badge badge-pill {{ item.get_label_display }}-color">NEW</span>
+                    {% if item.discount_price %}
+                      <span class="badge badge-pill info-color">Discount</span>
+                    {% endif %}
+                  </a>
+                </strong>
+              </h5>
+
+              {% if item.discount_price %}
+                <span class="font-weight-bold grey-text mr-1">
+                  <del>${{ item.price }}</del>
+                </span>
+                <span class="font-weight-bold red-text" style="font-size:30px;">
+                  ${{ item.discount_price }}
+                </span>
+              {% else %}
+                <span class="font-weight-bold blue-text" style="font-size:30px;">
+                  <strong>
+                    ${{ item.price }}
+                  </strong>
+                </span>
+              {% endif %}
+
+            </div>
+            <!--Card content-->
+
+          </div>
+          <!--Card-->
+
+        </div>
+        <!--Grid column-->
+
+        {% endfor %}
+      </div>
+      <!--Grid row-->
+
+    </section>
+    <!--Section: Products v.3-->
+
+    <!--Pagination-->
     
-  </main>
+    {% if is_paginated %}
+    <nav class="d-flex justify-content-center wow fadeIn">
+      <ul class="pagination pg-blue">
 
-  <!--Footer-->
-  {% include 'snippets/footer-snippet.html' %}
-  <!--Footer-->
+        <!--Arrow left-->
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+            <span class="sr-only">Previous</span>
+          </a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+        </li>
+        {% endif %}
+        <li class="page-item active">
+          <a class="page-link" href="?page={{ page_obj.number }}">{{ page_obj.number }}</a>
+          <span class="sr-only">(current)</span>
+        </li>
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+        </li>
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+            <span class="sr-only">Next</span>
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+    <!--Pagination-->
+
+  </div>
 
 {% endblock content %}
-  <!--Main layout-->
-
-  <!-- SCRIPTS -->
-  <!-- JQuery -->
-  <script type="text/javascript" src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
-  <!-- Bootstrap tooltips -->
-  <script type="text/javascript" src="{% static 'js/popper.min.js' %}"></script>
-  <!-- Bootstrap core JavaScript -->
-  <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
-  <!-- MDB core JavaScript -->
-  <script type="text/javascript" src="{% static 'js/mdb.min.js' %}"></script>
-  <!-- Initializations -->
-  <script type="text/javascript">
-    // Animations initialization
-    new WOW().init();
-
-  </script>
-</body>
-
-</html>
