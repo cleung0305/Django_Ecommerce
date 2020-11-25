@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+
+<head>
+  <style type="text/css">
+    .category-nav-item:hover{
+      background-color: rgba(233, 233, 233, 0.205);
+    }
+    .category-nav-item:hover span{
+      color: rgba(255, 255, 255, 0.808);
+    }
+  </style>
+</head>
+
+{% block head_title %}
+Order Summary
+{% endblock head_title %}
+
+  <!--Main layout-->
+{% block content %}
+  {% comment %} <!--Carousel Wrapper-->
+  {% include 'snippets/carouselWrapper-snippet.html' %}
+  <!--/.Carousel Wrapper--> {% endcomment %}
+
+  <div class="container pt-3">
+        <div class="table-responsive text-nowrap">
+            <h2>Order Summary</h2>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width:5%">#</th>
+                        <th scope="col" style="width:50%">Item</th>
+                        <th scope="col" style="width:15%; text-align:right">Quantity</th>
+                        <th scope="col" style="width:15%; text-align:right">Unit Price</th>
+                        <th scope="col" style="width:15%; text-align:right">Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order_item in object.items.all %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td><a href="{{ order_item.item.get_absolute_url }}">{{ order_item.item.title }}</a></td>
+                        <td style="text-align:right">{{ order_item.quantity }}</td>
+                        {% if order_item.item.discount_price %}
+                        <td style="text-align:right"><del>${{ order_item.item.price }}</del> ${{ order_item.item.discount_price }}</td>
+                        <td style="text-align:right"><del>${{ order_item.get_total_item_price }}</del> ${{ order_item.get_total_item_discount_price }}</td>
+                        {% else %}
+                        <td style="text-align:right">${{ order_item.item.price }}</td>
+                        <td style="text-align:right">${{ order_item.get_total_item_price }}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align:right">Total: ${{object.get_total_order_price }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+  </div>
+
+{% endblock content %}
