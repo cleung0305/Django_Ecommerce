@@ -18,6 +18,8 @@ LABEL_CHOICES = (
 
 # Create your models here.
 class Item(models.Model):
+    """Single Item object. contains the item's title, price, category, etc...
+    """
     title = models.CharField(max_length = 100)
     price = models.FloatField(default=0)
     discount_price = models.FloatField(blank=True, null = True)
