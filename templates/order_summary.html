@@ -15,6 +15,14 @@ Order Summary
     .price{
       text-align:right;
     }
+    .remove-item:hover{
+      color: red;
+    }
+    .add-single-item:hover,
+    .remove-single-item:hover{
+      color: blue;
+    }
+    
   </style>
 
   <div class="container pt-3">
@@ -31,27 +39,58 @@ Order Summary
                     </tr>
                 </thead>
                 <tbody>
+                  <!-- <tr>
+                    <th scope="col" style="width:5%">#</th>
+                    <th scope="col" style="width:50%">Item</th>
+                    <th scope="col" style="width:15%; text-align:right">Quantity</th>
+                    <th scope="col" style="width:15%; text-align:right">Unit Price</th>
+                    <th scope="col" style="width:15%; text-align:right">Price</th>
+                    <th></th>
+                  </tr> -->
                     {% for order_item in object.items.all %}
-                    <tr>
-                      <th scope="row">{{ forloop.counter }}</th>
-                      <td><a href="{{ order_item.item.get_absolute_url }}">{{ order_item.item.title }}</a></td>
-                      <td class="price">{{ order_item.quantity }}</td>
-                      {% if order_item.item.discount_price %}
-                      <td class="price"><del>${{ order_item.item.price }}</del> ${{ order_item.item.discount_price }}</td>
-                      <td class="price"><del>${{ order_item.get_total_item_price }}</del> ${{ order_item.get_total_item_discount_price }}</td>
-                      {% else %}
-                      <td class="price">${{ order_item.item.price }}</td>
-                      <td class="price">${{ order_item.get_total_item_price }}</td>
-                      {% endif %}
-                  </tr>
+                      <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>
+                          <a href="{{ order_item.item.get_absolute_url }}">{{ order_item.item.title }}</a>
+                        </td>
+                        <td class="price">
+                          <a href="{% url 'core:remove-from-cart' order_item.item.slug %}" class="remove-item"><i class="fas fa-trash mr-3"></i></a>
+                          <a href="{% url 'core:remove-single-item-from-cart' order_item.item.slug %}" class="remove-single-item"><i class="fas fa-minus mr-2"></i></a>
+                          {{ order_item.quantity }}
+                          <a href="{% url 'core:add-single-item-to-cart' order_item.item.slug %}" class="add-single-item"><i class="fas fa-plus ml-2"></i></a>
+                        </td>
+                        {% if order_item.item.discount_price %}
+                        <td class="price"><del>${{ order_item.item.price }}</del> ${{ order_item.item.discount_price }}</td>
+                        <td class="price"><del>${{ order_item.get_total_item_price }}</del> ${{ order_item.get_total_item_discount_price }}</td>
+                        {% else %}
+                        <td class="price">${{ order_item.item.price }}</td>
+                        <td class="price">${{ order_item.get_total_item_price }}</td>
+                        {% endif %}
+                      </tr>
+
+                    {% empty %}
+                      <tr colspan="5">
+                        <td>Your cart is empty.</td>
+                      </tr>
+                      <tr>
+                        <td colspan="5">
+                          <a href="{% url 'core:home' %}" class="btn btn-info float-right ml-2">Continue Shopping</a>
+                        </td>
+                      </tr>
                     {% endfor %}
+
+                    {% if object.get_total_order_price %}
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td style="text-align:right">Total: ${{object.get_total_order_price }}</td>
+                        <td colspan="4"><b>Order Total:</b></td>
+                        <td style="text-align:right"><b>${{object.get_total_order_price }}</b></td>
                     </tr>
+                    <tr>
+                      <td colspan="5">
+                        <a href="{% url 'core:checkout' %}" class="btn btn-warning float-right ml-2">Checkout</a>
+                        <a href="{% url 'core:home' %}" class="btn btn-info float-right ml-2">Continue Shopping</a>
+                      </td>
+                    </tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>

@@ -74,6 +74,30 @@ def add_to_cart(request, slug):
     return redirect("core:product", slug=slug)
 
 @login_required
+def add_single_item_to_cart(request, slug):
+    item = get_object_or_404(Item, slug=slug)
+    order_item, created = OrderItem.objects.get_or_create(
+            item=item,
+            user=request.user,
+            ordered=False
+        )
+    order_queryset = Order.objects.filter(user=request.user, ordered=False)
+    if order_queryset.exists():
+        order = order_queryset[0]
+        #check if order item is in the order
+        if order.items.filter(item__slug=item.slug).exists():
+            order_item.quantity += 1
+            order_item.save()
+            messages.info(request, "This item quantity was updated.")
+            return redirect("core:order-summary")
+        else:
+            messages.info(request, "This item was not in your cart.")
+            return redirect("core:order-summary")
+    else:
+        messages.info(request, "You do not have any order.")
+        return redirect("core:order-summary")
+
+@login_required
 def remove_from_cart(request, slug):
     item = get_object_or_404(Item, slug=slug)
     if request.user.is_anonymous:
@@ -92,12 +116,47 @@ def remove_from_cart(request, slug):
                 )[0]
                 order.items.remove(order_item)
                 messages.info(request, "This item was removed from your cart.")
-                return redirect("core:product", slug=slug)
+                return redirect("core:order-summary")
             else: 
                 #add a message saying the user does not have any order.
                 messages.info(request, "This item was not in your cart.")
-                return redirect("core:product", slug=slug)
+                return redirect("core:order-summary")
         else:
             #add a message saying the user does not have any order.
             messages.info(request, "You do not have any ordeer.")
             return redirect("core:product", slug=slug)
+
+
+@login_required
+def remove_single_item_from_cart(request, slug):
+    item = get_object_or_404(Item, slug=slug)
+    if request.user.is_anonymous:
+        messages.info(request,"You are not logged in.")
+        return redirect("core:order-summary")
+    else:
+        order_queryset = Order.objects.filter(user=request.user, ordered=False)
+        if order_queryset.exists():
+            order = order_queryset[0]
+            #check if order item is in the order
+            if order.items.filter(item__slug=item.slug).exists():
+                order_item = OrderItem.objects.filter(
+                    item=item,
+                    user=request.user,
+                    ordered=False
+                )[0]
+                if(order_item.quantity > 1):
+                    order_item.quantity -= 1
+                    order_item.save()
+                    messages.info(request, "This item quantity was updated.")
+                else:
+                    order.items.remove(order_item)
+                    messages.info(request, "This item was removed from your cart.")
+                return redirect("core:order-summary")
+            else: 
+                #add a message saying the user does not have any order.
+                messages.info(request, "This item was not in your cart.")
+                return redirect("core:order-summary")
+        else:
+            #add a message saying the user does not have any order.
+            messages.info(request, "You do not have any ordeer.")
+            return redirect("core:order-summary")
