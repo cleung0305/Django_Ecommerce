@@ -22,54 +22,63 @@ class MathClass():
 # print(a.__lt__(b))
 # print(len(x1))
 
-class BaseMeta(type):
-    def __new__(cls, name, bases, body):
-        print("BaseMeta.__new__", cls, name, bases, body)
-        if not 'bar' in body:
-            raise TypeError("Bad user!")
-        return super().__new__(cls, name, bases, body)
+# class BaseMeta(type):
+#     def __new__(cls, name, bases, body):
+#         print("BaseMeta.__new__", cls, name, bases, body)
+#         if not 'bar' in body:
+#             raise TypeError("Bad user!")
+#         return super().__new__(cls, name, bases, body)
 
-class Base(metaclass=BaseMeta):
-    def foo(self):
-        return self.bar()
-    def bar(self):
-        return 'bar'
+# class Base(metaclass=BaseMeta):
+#     def foo(self):
+#         return self.bar()
+#     def bar(self):
+#         return 'bar'
 
-class Derived(Base):
-    def foo(self):
-        return 'foo'
-    def bar(self):
-        return 'bar'
+# class Derived(Base):
+#     def foo(self):
+#         return 'foo'
+#     def bar(self):
+#         return 'bar'
 
-class MyClass(metaclass=BaseMeta):
-    def too(self):
-        return 'too'
-    def bar(self):
-        return 'bar'
+# class MyClass(metaclass=BaseMeta):
+#     def too(self):
+#         return 'too'
+#     def bar(self):
+#         return 'bar'
 
 
-from time import time
-def timer(func):
-    def wrapper(*args, **kwargs):
-        before = time()
-        result = func(*args, **kwargs)
-        after = time()
-        print('time: ', after - before)
-        return result
-    return wrapper
+# from time import time
+# def timer(func):
+#     def wrapper(*args, **kwargs):
+#         before = time()
+#         result = func(*args, **kwargs)
+#         after = time()
+#         print('time: ', after - before)
+#         return result
+#     return wrapper
 
-n = 2
-def nTimes(func):
-    def wrapper(*args, **kwargs):
-        for _ in range(n):
-            rv = func(*args, **kwargs)
-        return rv
-    return wrapper
+# n = 2
+# def nTimes(func):
+#     def wrapper(*args, **kwargs):
+#         for _ in range(n):
+#             rv = func(*args, **kwargs)
+#         return rv
+#     return wrapper
 
-@nTimes
-@timer
-def add(x, y, a, s, v):
-    print('hi')
-    return x + y + s+v+a
+# @nTimes
+# @timer
+# def add(x, y, a, s, v):
+#     print('hi')
+#     return x + y + s+v+a
 
-print(add(3,6,2,1,4))
+# print(add(3,6,2,1,4))
+
+from time import sleep
+def compute():
+    for i in range(10):
+        sleep(0.5)
+        yield i
+        
+for i in compute():
+    print(i)

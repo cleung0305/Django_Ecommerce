@@ -22,6 +22,7 @@
             <!--Card content-->
             <form class="card-body">
 
+              {% comment %}
               <!--Grid row-->
               <div class="row">
 
@@ -51,7 +52,9 @@
 
               </div>
               <!--Grid row-->
+              {% endcomment %}
 
+              {% comment %}
               <!--Username-->
               <div class="md-form input-group pl-0 mb-5">
                 <div class="input-group-prepend">
@@ -59,6 +62,7 @@
                 </div>
                 <input type="text" class="form-control py-0" placeholder="Username" aria-describedby="basic-addon1">
               </div>
+              {% endcomment %}
 
               <!--email-->
               <div class="md-form mb-5">
@@ -68,21 +72,25 @@
 
               <!--address-->
               <div class="md-form mb-5">
-                <input type="text" id="address" class="form-control" placeholder="1234 Main St">
+                <input type="text" id="address" class="form-control" required>
                 <label for="address" class="">Address</label>
               </div>
 
               <!--address-2-->
               <div class="md-form mb-5">
-                <input type="text" id="address-2" class="form-control" placeholder="Apartment or suite">
+                <input type="text" id="address-2" class="form-control">
                 <label for="address-2" class="">Address 2 (optional)</label>
               </div>
 
+              <!--City-->
+              <div class="md-form mb-5">
+                <input type="text" id="address-3" class="form-control" required>
+                <label for="address-3" class="">City</label>
+              </div>
               <!--Grid row-->
               <div class="row">
-
-                <!--Grid column-->
-                <div class="col-lg-4 col-md-12 mb-4">
+                
+                <div class="col-md-8 mb-4">
 
                   <label for="country">Country</label>
                   <select class="custom-select d-block w-100" id="country" required>
@@ -90,14 +98,14 @@
                     <option>United States</option>
                   </select>
                   <div class="invalid-feedback">
-                    Please select a valid country.
+                    Please provide a valid country.
                   </div>
 
                 </div>
-                <!--Grid column-->
 
+                {% comment %}
                 <!--Grid column-->
-                <div class="col-lg-4 col-md-6 mb-4">
+                <div class="col-md-8 mb-4">
 
                   <label for="state">State</label>
                   <select class="custom-select d-block w-100" id="state" required>
@@ -109,10 +117,10 @@
                   </div>
 
                 </div>
-                <!--Grid column-->
+                {% endcomment %}
 
                 <!--Grid column-->
-                <div class="col-lg-4 col-md-6 mb-4">
+                <div class="col-md-4 mb-4">
 
                   <label for="zip">Zip</label>
                   <input type="text" class="form-control" id="zip" placeholder="" required>
@@ -142,50 +150,15 @@
               <div class="d-block my-3">
                 <div class="custom-control custom-radio">
                   <input id="credit" name="paymentMethod" type="radio" class="custom-control-input" checked required>
-                  <label class="custom-control-label" for="credit">Credit card</label>
+                  <label class="custom-control-label" for="credit">Credit/Debit card</label>
                 </div>
-                <div class="custom-control custom-radio">
-                  <input id="debit" name="paymentMethod" type="radio" class="custom-control-input" required>
-                  <label class="custom-control-label" for="debit">Debit card</label>
-                </div>
+          
                 <div class="custom-control custom-radio">
                   <input id="paypal" name="paymentMethod" type="radio" class="custom-control-input" required>
                   <label class="custom-control-label" for="paypal">Paypal</label>
                 </div>
               </div>
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label for="cc-name">Name on card</label>
-                  <input type="text" class="form-control" id="cc-name" placeholder="" required>
-                  <small class="text-muted">Full name as displayed on card</small>
-                  <div class="invalid-feedback">
-                    Name on card is required
-                  </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label for="cc-number">Credit card number</label>
-                  <input type="text" class="form-control" id="cc-number" placeholder="" required>
-                  <div class="invalid-feedback">
-                    Credit card number is required
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-3 mb-3">
-                  <label for="cc-expiration">Expiration</label>
-                  <input type="text" class="form-control" id="cc-expiration" placeholder="" required>
-                  <div class="invalid-feedback">
-                    Expiration date required
-                  </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                  <label for="cc-expiration">CVV</label>
-                  <input type="text" class="form-control" id="cc-cvv" placeholder="" required>
-                  <div class="invalid-feedback">
-                    Security code required
-                  </div>
-                </div>
-              </div>
+              
               <hr class="mb-4">
               <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
 

@@ -20,7 +20,10 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'core',
+    'theme',
     'crispy_forms',
+    'tailwind',
+    'django_countries',
 ]
 
 MIDDLEWARE = [
