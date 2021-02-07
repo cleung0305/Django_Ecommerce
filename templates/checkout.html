@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 
@@ -18,6 +19,12 @@
 
           <!--Card-->
           <div class="card">
+
+            <!-- <form>
+              {% csrf_token %}
+              {{ form|crispy }}
+              <button class="btn btn-primary" type="submit">Contiune to Payment</button>
+            </form> -->
 
             <!--Card content-->
             <form class="card-body">
@@ -66,19 +73,21 @@
 
               <!--email-->
               <div class="md-form mb-5">
-                <input type="text" id="email" class="form-control" placeholder="youremail@example.com">
+                <input type="text" id="email" class="form-control">
                 <label for="email" class="">Email (optional)</label>
               </div>
 
               <!--address-->
               <div class="md-form mb-5">
-                <input type="text" id="address" class="form-control" required>
+                <!-- <input type="text" id="address" class="form-control" required> -->
+                {{ form.street_address }}
                 <label for="address" class="">Address</label>
               </div>
 
               <!--address-2-->
               <div class="md-form mb-5">
-                <input type="text" id="address-2" class="form-control">
+                <!-- <input type="text" id="address-2" class="form-control"> -->
+                {{ form.apartment_address }}
                 <label for="address-2" class="">Address 2 (optional)</label>
               </div>
 
@@ -93,40 +102,41 @@
                 <div class="col-md-8 mb-4">
 
                   <label for="country">Country</label>
-                  <select class="custom-select d-block w-100" id="country" required>
+                  {{ form.country_address }}
+                  <!-- <select class="custom-select d-block w-100" id="country" required>
                     <option value="">Choose...</option>
                     <option>United States</option>
-                  </select>
+                  </select> -->
                   <div class="invalid-feedback">
                     Please provide a valid country.
                   </div>
 
                 </div>
 
-                {% comment %}
                 <!--Grid column-->
                 <div class="col-md-8 mb-4">
 
                   <label for="state">State</label>
-                  <select class="custom-select d-block w-100" id="state" required>
+                  {{ form.states_address }}
+                  <!-- <select class="custom-select d-block w-100" id="state" required>
                     <option value="">Choose...</option>
                     <option>California</option>
-                  </select>
+                  </select> -->
                   <div class="invalid-feedback">
                     Please provide a valid state.
                   </div>
 
                 </div>
-                {% endcomment %}
 
                 <!--Grid column-->
-                <div class="col-md-4 mb-4">
+                <div class="md-form col-md-4 mb-4">
 
-                  <label for="zip">Zip</label>
-                  <input type="text" class="form-control" id="zip" placeholder="" required>
+                  <!-- <input type="text" class="form-control" id="zip" placeholder="" required>
                   <div class="invalid-feedback">
                     Zip code required.
-                  </div>
+                  </div> -->
+                  {{ form.zip_address }}
+                  <label for="zip" class="ml-3">Zip</label>
 
                 </div>
                 <!--Grid column-->

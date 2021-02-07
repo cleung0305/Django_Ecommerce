@@ -7,6 +7,7 @@ from django.template import RequestContext, Context
 from django.utils import timezone
 from django.contrib import messages
 from .models import *
+from .forms import CheckoutForm
 
 # Create your views here.
 
@@ -41,9 +42,24 @@ class ProductDetailView(DetailView):
         context = self.get_context_data()
         return render(request, self.template_name, context)
 
-class CheckoutView(ListView):
+class CheckoutView(View):
     model = Order
     template_name = "checkout.html"
+    context = {}
+    def get(self, *args, **kwargs):
+        #forms
+        form = CheckoutForm()
+        self.context = {
+            'form':form
+        }
+        return render(self.request, self.template_name, self.context)
+
+    def post(self, *args, **kwargs):
+        form = CheckoutForm(self.request.POST or None)
+        if form.is_valid():
+            print('the form is valid.')
+            return redirect('core:checkout')
+
 
 @login_required
 def add_to_cart(request, slug):
