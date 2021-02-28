@@ -56,9 +56,44 @@ class CheckoutView(View):
 
     def post(self, *args, **kwargs):
         form = CheckoutForm(self.request.POST or None)
-        if form.is_valid():
-            print('the form is valid.')
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            if form.is_valid():
+                street_address = form.cleaned_data.get('street_address')
+                apartment_address = form.cleaned_data.get('apartment_address')
+                city = form.cleaned_data.get('city')
+                country = form.cleaned_data.get('country')
+                states = form.cleaned_data.get('states')
+                zip_address = form.cleaned_data.get('zip_address')
+                
+                
+                # same_shipping_address = form.cleaned_data.get('same_shipping_address')
+                # save_info = form.cleaned_data.get('save_info')
+                payment_option = form.cleaned_data.get('payment_option')
+                billing_address = BillingAddress(
+                    user=self.request.user,
+                    street_address=street_address,
+                    apartment_address=apartment_address,
+                    city=city,
+                    country=country,
+                    states=states,
+                    zip_address=zip_address
+                )
+                billing_address.save()
+                order.billing_address = billing_address
+                order.save()
+                return redirect('core:payment', payment_option = payment_option)
+            messages.warning(self.request, 'Failed Checkout')
             return redirect('core:checkout')
+        except ObjectDoesNotExist:
+            messages.error(self.request, "You do not have an active order.")
+            return redirect("core:order-summary")
+
+class PaymentView(View):
+    template_name = 'payment.html'
+
+    def get(self, *args, **kwargs):
+        return render(self.request, self.template_name)
 
 
 @login_required

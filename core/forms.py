@@ -1,5 +1,6 @@
 from django import forms
 from django_countries.fields import CountryField
+from django_countries.widgets import CountrySelectWidget
 
 # class ContactForm(forms.Form):
 #     from_email = forms.EmailField(required=True)
@@ -13,7 +14,7 @@ STATES_CHOICES = (
 
 
 PAYMENT_CHOICES = (
-    ('C', 'Credit/Debit Card'),
+    ('C', 'Card Payment'),
     ('P', 'Paypal')
 )
 
@@ -22,22 +23,33 @@ class CheckoutForm(forms.Form):
     street_address = forms.CharField(widget=forms.TextInput(attrs={
             'id':'address',
             'class':'form-control'
-        }))
+        }), required=True)
+    
     apartment_address = forms.CharField(required=False, widget=forms.TextInput(attrs={
             'id':'address-2',
             'class':'form-control'
         }))
-    country_address = CountryField(blank_label='(select country)').formfield(widget=forms.Select(attrs={
-            'class':'custom-select d-block w-100'
+
+    city = forms.CharField(widget=forms.TextInput(attrs={
+            'id':'city',
+            'class':'form-control'
+        }), required=True)
+    
+    country = CountryField(blank_label='(select country)').formfield(widget=forms.Select(attrs={
+            'class':'custom-select d-block w-100',
+            'id':'country'
         }))
-    states_address = forms.ChoiceField(choices=STATES_CHOICES, widget=forms.Select(attrs={
+    
+    states = forms.ChoiceField(choices=STATES_CHOICES, widget=forms.Select(attrs={
             'class':'custom-select d-block w-100',
             'id':'state'
         }))
+    
     zip_address = forms.CharField(widget=forms.TextInput(attrs={
             'id':'zip',
             'class':'form-control'
         }))
-    same_billing_address = forms.BooleanField(widget=forms.CheckboxInput())
-    save_info = forms.BooleanField(widget=forms.CheckboxInput())
+
+    same_shipping_address = forms.BooleanField(required=False)
+    save_info = forms.BooleanField(required=False)
     payment_option = forms.ChoiceField(widget=forms.RadioSelect(), choices=PAYMENT_CHOICES)
