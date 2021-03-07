@@ -1,12 +1,12 @@
-class MathClass():
-    def __init__(self, *num):
-        self.num = num
-    def __repr__(self):
-        return 'MathClass(*{!r})'.format(self.num)
-    def __add__(self, other):
-        return MathClass(*(x + y for x , y in zip(self.num, other.num)))
-    def __len__(self):
-        return len(self.num)
+# class MathClass():
+#     def __init__(self, *num):
+#         self.num = num
+#     def __repr__(self):
+#         return 'MathClass(*{!r})'.format(self.num)
+#     def __add__(self, other):
+#         return MathClass(*(x + y for x , y in zip(self.num, other.num)))
+#     def __len__(self):
+#         return len(self.num)
 
 
 # x1 = MathClass(3, 8, 2)
@@ -74,11 +74,44 @@ class MathClass():
 
 # print(add(3,6,2,1,4))
 
-from time import sleep
-def compute():
-    for i in range(10):
-        sleep(0.5)
-        yield i
+# from time import sleep
+# def compute():
+#     for i in range(10):
+#         sleep(0.5)
+#         yield i
         
-for i in compute():
-    print(i)
+# for i in compute():
+#     print(i)
+
+# import time
+# import requests
+# from bs4 import BeautifulSoup
+
+# url = ('https://www.coinbase.com/price/ethereum')
+# r = requests.get(url)
+
+# time.sleep(10)
+# web_content = BeautifulSoup(r.text, 'html5lib')
+# price = web_content.find('span', {"class" : 'AssetChartAmount__Number-sc-1b4douf-1 fQDZTy'})
+
+# print(web_content)
+
+import time
+from bs4 import BeautifulSoup
+from selenium  import webdriver
+
+try:
+    driver = webdriver.Chrome()
+    driver.get('https://www.coinbase.com/price/bitcoin')
+
+    for _ in range(30):
+        driver.refresh()
+        time.sleep(3)
+        soup = BeautifulSoup(driver.page_source,"html5lib")
+        item = soup.find('span', {'class' : 'AssetChartAmount__Number-sc-1b4douf-1 fQDZTy'}).text
+        print(item)
+        time.sleep(7)
+    driver.quit()
+except AttributeError:
+    print("Use find() you dumb! Please try again!")
+    driver.quit()
