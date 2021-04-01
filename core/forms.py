@@ -20,6 +20,11 @@ PAYMENT_CHOICES = (
 
 
 class CheckoutForm(forms.Form):
+    email = forms.EmailField(widget=forms.EmailInput(attrs={
+        'id':'email',
+        'class':'form-control'
+    }), required=False)
+
     street_address = forms.CharField(widget=forms.TextInput(attrs={
             'id':'address',
             'class':'form-control'

@@ -59,9 +59,7 @@
 
               </div>
               <!--Grid row-->
-              {% endcomment %}
 
-              {% comment %}
               <!--Username-->
               <div class="md-form input-group pl-0 mb-5">
                 <div class="input-group-prepend">
@@ -73,7 +71,7 @@
 
               <!--email-->
               <div class="md-form mb-5">
-                <input type="text" id="email" class="form-control">
+                {{ form.email }}
                 <label for="email" class="">Email (optional)</label>
                 <p class="mt-0 h6 text-muted" style="font-size:0.8rem;">We will send you a confirmation via this email address.</p>
               </div>

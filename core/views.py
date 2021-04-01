@@ -59,6 +59,7 @@ class CheckoutView(View):
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
             if form.is_valid():
+                email = form.cleaned_data.get('email')
                 street_address = form.cleaned_data.get('street_address')
                 apartment_address = form.cleaned_data.get('apartment_address')
                 city = form.cleaned_data.get('city')
@@ -72,6 +73,7 @@ class CheckoutView(View):
                 payment_option = form.cleaned_data.get('payment_option')
                 billing_address = BillingAddress(
                     user=self.request.user,
+                    email = email,
                     street_address=street_address,
                     apartment_address=apartment_address,
                     city=city,

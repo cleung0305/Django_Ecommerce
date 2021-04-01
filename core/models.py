@@ -90,6 +90,7 @@ class OrderItem(models.Model):
 
 class BillingAddress(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    email = models.EmailField(max_length=200, null=True)
     street_address = models.CharField(max_length=100)
     apartment_address = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
