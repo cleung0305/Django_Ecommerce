@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
@@ -8,6 +9,9 @@ from django.utils import timezone
 from django.contrib import messages
 from .models import *
 from .forms import CheckoutForm
+
+import stripe
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 # Create your views here.
 
@@ -96,6 +100,18 @@ class PaymentView(View):
 
     def get(self, *args, **kwargs):
         return render(self.request, self.template_name)
+
+    def post(self, *args, **kwargs):
+        order = Order.objects.get(user=self.request.user, ordered=False)
+        token = self.request.POST.get('stripeToken')
+        stripe.Charge.create(
+            amount=order.get_total_order_price() * 100, #cents
+            currency="usd",
+            source=token,
+            description="My First Test Charge (created for API docs)",
+        )
+
+        order.ordered = True
 
 
 @login_required

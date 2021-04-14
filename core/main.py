@@ -96,22 +96,32 @@
 
 # print(web_content)
 
-import time
-from bs4 import BeautifulSoup
-from selenium  import webdriver
 
-try:
-    driver = webdriver.Chrome()
-    driver.get('https://www.coinbase.com/price/bitcoin')
+#-----getting price from coinbase-----
+# import time
+# from bs4 import BeautifulSoup
+# from selenium  import webdriver
 
-    for _ in range(30):
-        driver.refresh()
-        time.sleep(3)
-        soup = BeautifulSoup(driver.page_source,"html5lib")
-        item = soup.find('span', {'class' : 'AssetChartAmount__Number-sc-1b4douf-1 fQDZTy'}).text
-        print(item)
-        time.sleep(7)
-    driver.quit()
-except AttributeError:
-    print("Use find() you dumb! Please try again!")
-    driver.quit()
+# try:
+#     driver = webdriver.Chrome()
+#     driver.get('https://www.coinbase.com/price/bitcoin')
+
+#     for _ in range(30):
+#         driver.refresh()
+#         time.sleep(3)
+#         soup = BeautifulSoup(driver.page_source,"html5lib")
+#         item = soup.find('span', {'class' : 'AssetChartAmount__Number-sc-1b4douf-1 fQDZTy'}).text
+#         print(item)
+#         time.sleep(7)
+#     driver.quit()
+# except AttributeError:
+#     print("Use find() you dumb! Please try again!")
+#     driver.quit()
+
+import pandas as pd
+import plotly.express as px
+
+df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/2014_apple_stock.csv')
+print(df.head())
+fig = px.line(df, x = 'AAPL_x', y = 'AAPL_y', title='Apple Share Price Over Time (2014)')
+fig.show()
