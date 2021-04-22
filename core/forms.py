@@ -14,7 +14,7 @@ STATES_CHOICES = (
 
 
 PAYMENT_CHOICES = (
-    ('C', 'Card Payment'),
+    ('C', 'Card'),
     ('P', 'Paypal')
 )
 

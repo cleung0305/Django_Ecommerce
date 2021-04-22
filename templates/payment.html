@@ -181,6 +181,7 @@
             <span class="text-muted">Payment Information</span>
           </h4>
             <form action="." method="post" id="stripe-form">
+              {% csrf_token %}
               <label for="card-element">
                 Credit or debit card
               </label>
