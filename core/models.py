@@ -3,6 +3,7 @@ from django.db import models
 from django.shortcuts import reverse
 from django.utils.text import slugify
 from django_countries.fields import CountryField
+from django_resized import ResizedImageField
 
 
 CATEGORY_CHOICES = (
@@ -32,6 +33,7 @@ class Item(models.Model):
     label = models.CharField(choices=LABEL_CHOICES, max_length = 1)
     slug = models.SlugField(blank = True, null = True, unique = True)
     description = models.TextField()
+    image = models.ImageField(blank=True, null=True)
 
     def __str__(self):
         return self.title

@@ -12,6 +12,7 @@ django-allauth==0.42.0
 django-configurations==2.2
 django-countries==7.0
 django-crispy-forms==1.9.2
+django-resized==0.3.11
 django-tailwind==1.1.0
 html5lib==1.1
 idna==2.10
@@ -25,6 +26,7 @@ oauthlib==3.1.0
 packaging==20.8
 pandas==1.2.3
 pep8==1.7.1
+Pillow==8.2.0
 plotly==4.14.3
 pluggy==0.13.1
 py==1.10.0

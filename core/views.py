@@ -105,7 +105,11 @@ class PaymentView(View):
     template_name = 'payment.html'
 
     def get(self, *args, **kwargs):
-        return render(self.request, self.template_name)
+        order = Order.objects.get(user=self.request.user, ordered=False)
+        context = {
+            'order':order
+        }
+        return render(self.request, self.template_name, context)
 
     def post(self, *args, **kwargs):
         order = Order.objects.get(user=self.request.user, ordered=False)
