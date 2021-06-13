@@ -130,6 +130,12 @@ class PaymentView(View):
             payment.amount = order.get_total_order_price()
             payment.save()
 
+            #set order item to be ordered
+            order_items = order.items.all()
+            order_items.update(ordered=True)
+            for item in order_items:
+                item.save()
+
             #assign the payment to order
             order.ordered = True
             order.payment = payment
@@ -287,5 +293,23 @@ def remove_single_item_from_cart(request, slug):
                 return redirect("core:order-summary")
         else:
             #add a message saying the user does not have any order.
-            messages.info(request, "You do not have any ordeer.")
+            messages.info(request, "You do not have any order.")
             return redirect("core:order-summary")
+
+def get_coupon(request,code):
+    try:
+        coupon = Coupon.objects.get(code=code)
+        return coupon
+    except ObjectDoesNotExist:
+        messages.error(request, "Invalid Coupon")
+        return redirect("core:checkout")
+
+def add_coupon(request, code):
+    try:
+        order = Order.objects.get(user=request.user, ordered=False)
+        order.coupon = get_coupon(request, code)
+        order.save()
+
+    except ObjectDoesNotExist:
+        messages.error(request, "You do not have any order")
+        return redirect("core:checkout")
