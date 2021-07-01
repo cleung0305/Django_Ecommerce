@@ -8,7 +8,7 @@ from django.template import RequestContext, Context
 from django.utils import timezone
 from django.contrib import messages
 from .models import *
-from .forms import CheckoutForm
+from .forms import CheckoutForm, CouponForm
 
 import time
 import stripe
@@ -35,7 +35,7 @@ class OrderSummaryView(LoginRequiredMixin, View):
             }
             return render(self.request, 'order_summary.html', context)
         except ObjectDoesNotExist:
-            messages.warning(self.request, "You do not have an active order.")
+            messages.warning(self.request, "You do not have any order.")
             return redirect("/")
 
 class ProductDetailView(DetailView):
@@ -48,48 +48,49 @@ class ProductDetailView(DetailView):
         return render(request, self.template_name, context)
 
 class CheckoutView(View):
-    model = Order
     template_name = "checkout.html"
     context = {}
     def get(self, *args, **kwargs):
         #forms
-        form = CheckoutForm()
-        self.context = {
-            'form':form
-        }
-        return render(self.request, self.template_name, self.context)
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            form = CheckoutForm()
+            self.context = {
+                'form':form,
+                'couponform':CouponForm(),
+                'order':order
+            }
+            return render(self.request, self.template_name, self.context)
+        except:
+            messages.error(self.request, 'You do not have any order')
+            return redirect('core:checkout')
 
     def post(self, *args, **kwargs):
         form = CheckoutForm(self.request.POST or None)
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
             if form.is_valid():
-                email = form.cleaned_data.get('email')
-                street_address = form.cleaned_data.get('street_address')
-                apartment_address = form.cleaned_data.get('apartment_address')
-                city = form.cleaned_data.get('city')
-                country = form.cleaned_data.get('country')
-                states = form.cleaned_data.get('states')
-                zip_address = form.cleaned_data.get('zip_address')
-                
-                
+                data = form.cleaned_data
                 # same_shipping_address = form.cleaned_data.get('same_shipping_address')
                 # save_info = form.cleaned_data.get('save_info')
-                payment_option = form.cleaned_data.get('payment_option')
+
+                # payment_option = form.cleaned_data.get('payment_option')
+                payment_option = data['payment_option']
                 billing_address = BillingAddress(
                     user=self.request.user,
-                    email = email,
-                    street_address=street_address,
-                    apartment_address=apartment_address,
-                    city=city,
-                    country=country,
-                    states=states,
-                    zip_address=zip_address
+                    email = data['email'],
+                    street_address=data['street_address'],
+                    apartment_address=data['apartment_address'],
+                    city=data['city'],
+                    country=data['country'],
+                    states=data['states'],
+                    zip_address=data['zip_address']
                 )
                 billing_address.save()
                 order.billing_address = billing_address
                 order.save()
                 
+                print(form.cleaned_data)
                 if payment_option == 'C':
                     return redirect('core:payment', payment_option = 'Card')
                 elif payment_option == 'P':
@@ -132,13 +133,15 @@ class PaymentView(View):
 
             #set order item to be ordered
             order_items = order.items.all()
-            order_items.update(ordered=True)
+            order_items.update(ordered=True, ordered_date=timezone.now())
             for item in order_items:
                 item.save()
 
             #assign the payment to order
             order.ordered = True
+            order.ordered_date = timezone.now()
             order.payment = payment
+            order.order_number = order.generate_order_number()
             order.save()
 
             messages.success(self.request, "Your order has been placed. Thank you!")
@@ -146,33 +149,33 @@ class PaymentView(View):
 
         except stripe.error.CardError as e:
         # Since it's a decline, stripe.error.CardError will be caught
-            messages.error(self.request, f"Card Error. {e.user_message}")
+            messages.warning(self.request, f"Card Error. {e.user_message}")
             return redirect("/")
         except stripe.error.RateLimitError as e:
             # Too many requests made to the API too quickly
-            messages.error(self.request, f"Rate Limit Error. {e.user_message}")
+            messages.warning(self.request, f"Rate Limit Error. {e.user_message}")
             return redirect("/")
         except stripe.error.InvalidRequestError as e:
             # Invalid parameters were supplied to Stripe's API
-            messages.error(self.request, f"Invalid Parameters. {e.user_message}")
+            messages.warning(self.request, f"Invalid Parameters. {e.user_message}")
             return redirect("/")
         except stripe.error.AuthenticationError as e:
             # Authentication with Stripe's API failed
             # (maybe you changed API keys recently)
-            messages.error(self.request, f"Not Authenticated. {e.user_message}")
+            messages.warning(self.request, f"Not Authenticated. {e.user_message}")
             return redirect("/")
         except stripe.error.APIConnectionError as e:
             # Network communication with Stripe failed
-            messages.error(self.request, f"API Connection Error. {e.user_message}")
+            messages.warning(self.request, f"API Connection Error. {e.user_message}")
             return redirect("/")
         except stripe.error.StripeError as e:
             # Display a very generic error to the user, and maybe send
             # yourself an email
-            messages.error(self.request, f"Payment Failed. Your were not charged. Please try again later. {e.user_message}")
+            messages.warning(self.request, f"Payment Failed. Your were not charged. Please try again later. {e.user_message}")
             return redirect("/")
         except Exception as e:
             # send email to ourselves
-            messages.error(self.request, f"Something went wrong. {e.user_message}")
+            messages.warning(self.request, f"Something went wrong. {e.user_message}")
             return redirect("/")
 
 
@@ -304,12 +307,21 @@ def get_coupon(request,code):
         messages.error(request, "Invalid Coupon")
         return redirect("core:checkout")
 
-def add_coupon(request, code):
-    try:
-        order = Order.objects.get(user=request.user, ordered=False)
-        order.coupon = get_coupon(request, code)
-        order.save()
+def add_coupon(request):
+    if request.method == "POST":
+        form = CouponForm(request.POST or None)
+        if form.is_valid():
+            try:
+                order = Order.objects.get(user=request.user, ordered=False)
+                code = form.cleaned_data.get('code')
+                order.coupon = get_coupon(request, code)
+                order.save()
 
-    except ObjectDoesNotExist:
-        messages.error(request, "You do not have any order")
-        return redirect("core:checkout")
+                messages.success(request, "Coupon added")
+                return redirect("core:checkout")
+
+            except ObjectDoesNotExist:
+                messages.error(request, "You do not have any order")
+                return redirect("core:home")
+    
+    return None

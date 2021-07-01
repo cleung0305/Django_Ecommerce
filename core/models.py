@@ -4,7 +4,9 @@ from django.shortcuts import reverse
 from django.utils.text import slugify
 from django_countries.fields import CountryField
 from django_resized import ResizedImageField
-
+from datetime import datetime
+import random
+import string
 
 CATEGORY_CHOICES = (
     ('S', 'Shirt'),
@@ -72,6 +74,7 @@ class OrderItem(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
     ordered = models.BooleanField(default=False)
+    ordered_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.quantity} of {self.item.title}"
@@ -99,6 +102,7 @@ class Order(models.Model):
     billing_address = models.ForeignKey('BillingAddress', on_delete=models.SET_NULL, blank=True, null=True)
     payment = models.ForeignKey('Payment', on_delete=models.SET_NULL, blank=True, null=True)
     coupon = models.ForeignKey('Coupon', on_delete=models.SET_NULL, blank=True, null=True)
+    order_number = models.CharField(max_length=10, null=True, blank=True)
 
     def __str__(self):
         return self.user.username
@@ -108,6 +112,17 @@ class Order(models.Model):
         for item in self.items.all():
             total+=item.get_final_total_item_price()
         return total
+    
+    def generate_random_string(self):
+        size = 10
+        chars = string.ascii_uppercase + string.digits
+        return "".join(random.choice(chars) for _ in range(size))
+
+    def generate_order_number(self):
+        new_num = self.generate_random_string()
+        while Order.objects.filter(order_number=new_num).exists():
+            new_num = generate_random_string(self)
+        return new_num
 
 class BillingAddress(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
