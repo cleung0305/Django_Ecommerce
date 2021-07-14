@@ -107,12 +107,27 @@ class Order(models.Model):
     def __str__(self):
         return self.user.username
 
-    def get_total_order_price(self):
+    def total_order_price(self):
         total = 0
         for item in self.items.all():
             total+=item.get_final_total_item_price()
         return total
+
+    def discount_amount(self):
+        amount = 0
+        price = self.total_order_price()
+        if self.coupon:
+            amount += price * (self.coupon.amount/100)
+        return amount
     
+    def total_order_price_with_discount(self):
+        return self.total_order_price() - self.discount_amount()
+
+    def final_price(self):
+        if self.coupon:
+            return self.total_order_price_with_discount()
+        return self.total_order_price()
+
     def generate_random_string(self):
         size = 10
         chars = string.ascii_uppercase + string.digits
@@ -121,7 +136,7 @@ class Order(models.Model):
     def generate_order_number(self):
         new_num = self.generate_random_string()
         while Order.objects.filter(order_number=new_num).exists():
-            new_num = generate_random_string(self)
+            new_num = self.generate_random_string()
         return new_num
 
 class BillingAddress(models.Model):
@@ -148,6 +163,8 @@ class Payment(models.Model):
 
 class Coupon(models.Model):
     code = models.CharField(max_length=10)
+    amount = models.FloatField(default=10)
+    description = models.CharField(max_length=100, blank=True, null = True)
 
     def __str__(self):
         return self.code

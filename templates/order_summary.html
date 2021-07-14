@@ -79,10 +79,10 @@ Order Summary
                       </tr>
                     {% endfor %}
 
-                    {% if object.get_total_order_price %}
+                    {% if object.total_order_price %}
                     <tr>
                         <td colspan="4"><b>Order Total:</b></td>
-                        <td style="text-align:right"><b>${{object.get_total_order_price }}</b></td>
+                        <td style="text-align:right"><b>${{object.total_order_price }}</b></td>
                     </tr>
                     <tr>
                       <td colspan="5">

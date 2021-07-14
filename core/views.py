@@ -115,7 +115,7 @@ class PaymentView(View):
     def post(self, *args, **kwargs):
         order = Order.objects.get(user=self.request.user, ordered=False)
         token = self.request.POST.get('stripeToken')
-        amount = int(order.get_total_order_price() * 100) #cents
+        amount = int(order.final_price() * 100) #cents
 
         try:
             charge = stripe.Charge.create(
@@ -128,7 +128,7 @@ class PaymentView(View):
             payment = Payment()
             payment.stripe_charge_id = charge['id']
             payment.user = self.request.user
-            payment.amount = order.get_total_order_price()
+            payment.amount = order.final_price()
             payment.save()
 
             #set order item to be ordered
@@ -304,7 +304,6 @@ def get_coupon(request,code):
         coupon = Coupon.objects.get(code=code)
         return coupon
     except ObjectDoesNotExist:
-        messages.error(request, "Invalid Coupon")
         return redirect("core:checkout")
 
 def add_coupon(request):
@@ -317,7 +316,11 @@ def add_coupon(request):
                 order.coupon = get_coupon(request, code)
                 order.save()
 
-                messages.success(request, "Coupon added")
+                messages.success(request, "Coupon applied")
+                return redirect("core:checkout")
+
+            except ValueError:
+                messages.error(request, "Coupon invalid")
                 return redirect("core:checkout")
 
             except ObjectDoesNotExist:

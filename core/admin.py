@@ -3,7 +3,7 @@ from .models import Item, OrderItem, Order, Payment, Coupon, BillingAddress
 # Register your models here.
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['user', 'ordered', 'get_total_order_price']
+    list_display = ['user', 'ordered', 'final_price']
 
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ['item_detail', 'ordered']

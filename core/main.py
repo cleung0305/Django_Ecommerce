@@ -48,31 +48,31 @@
 #         return 'bar'
 
 
-# from time import time
-# def timer(func):
-#     def wrapper(*args, **kwargs):
-#         before = time()
-#         result = func(*args, **kwargs)
-#         after = time()
-#         print('time: ', after - before)
-#         return result
-#     return wrapper
+from time import time
+def timer(func):
+    def wrapper(*args, **kwargs):
+        before = time()
+        result = func(*args, **kwargs)
+        after = time()
+        print('time: ', after - before)
+        return result
+    return wrapper
 
-# n = 2
-# def nTimes(func):
-#     def wrapper(*args, **kwargs):
-#         for _ in range(n):
-#             rv = func(*args, **kwargs)
-#         return rv
-#     return wrapper
+n = 5
+def nTimes(func):
+    def wrapper(*args, **kwargs):
+        for _ in range(n):
+            rv = func(*args, **kwargs)
+        return rv
+    return wrapper
 
-# @nTimes
-# @timer
-# def add(x, y, a, s, v):
-#     print('hi')
-#     return x + y + s+v+a
+@nTimes
+@timer
+def add(x, y, a, s, v):
+    print('hi')
+    return x+y+a+s+v
 
-# print(add(3,6,2,1,4))
+print(add(3,6,2,1,4))
 
 # from time import sleep
 # def compute():
@@ -118,10 +118,10 @@
 #     print("Use find() you dumb! Please try again!")
 #     driver.quit()
 
-import pandas as pd
-import plotly.express as px
+# import pandas as pd
+# import plotly.express as px
 
-df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/2014_apple_stock.csv')
-print(df.head())
-fig = px.line(df, x = 'AAPL_x', y = 'AAPL_y', title='Apple Share Price Over Time (2014)')
-fig.show()
+# df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/2014_apple_stock.csv')
+# print(df.head())
+# fig = px.line(df, x = 'AAPL_x', y = 'AAPL_y', title='Apple Share Price Over Time (2014)')
+# fig.show()
