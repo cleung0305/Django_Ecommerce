@@ -31,7 +31,9 @@ class OrderSummaryView(LoginRequiredMixin, View):
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
             context = {
-                "object":order
+                "object":order,
+                'couponform':CouponForm(),
+                'DISPLAY_COUPON_FORM': True,
             }
             return render(self.request, 'order_summary.html', context)
         except ObjectDoesNotExist:
@@ -58,7 +60,8 @@ class CheckoutView(View):
             self.context = {
                 'form':form,
                 'couponform':CouponForm(),
-                'order':order
+                'order':order,
+                'DISPLAY_COUPON_FORM': True
             }
             return render(self.request, self.template_name, self.context)
         except:
@@ -107,10 +110,15 @@ class PaymentView(View):
 
     def get(self, *args, **kwargs):
         order = Order.objects.get(user=self.request.user, ordered=False)
-        context = {
-            'order':order
-        }
-        return render(self.request, self.template_name, context)
+        if order.billing_address:
+            context = {
+                'order':order,
+                'DISPLAY_COUPON_FORM': False
+            }
+            return render(self.request, self.template_name, context)
+        else:
+            messages.error(self.request, "You do not have a billing address.")
+            return redirect('core:checkout')
 
     def post(self, *args, **kwargs):
         order = Order.objects.get(user=self.request.user, ordered=False)
@@ -202,8 +210,7 @@ def add_to_cart(request, slug):
             messages.info(request, "This item was added to your cart.")
             # return redirect("core:product", slug=slug)
     else:
-        ordered_date = timezone.now()
-        order = Order.objects.create(user=request.user, ordered_date=ordered_date)
+        order = Order.objects.create(user=request.user)
         order.items.add(order_item)
         messages.info(request, "This item was added to your cart.")
     return redirect("core:product", slug=slug)
@@ -306,25 +313,25 @@ def get_coupon(request,code):
     except ObjectDoesNotExist:
         return redirect("core:checkout")
 
-def add_coupon(request):
-    if request.method == "POST":
-        form = CouponForm(request.POST or None)
+class AddCouponView(View):
+    def post(self, *args, **kwargs):
+        form = CouponForm(self.request.POST or None)
         if form.is_valid():
             try:
-                order = Order.objects.get(user=request.user, ordered=False)
+                order = Order.objects.get(user=self.request.user, ordered=False)
                 code = form.cleaned_data.get('code')
-                order.coupon = get_coupon(request, code)
+                order.coupon = get_coupon(self.request, code)
                 order.save()
 
-                messages.success(request, "Coupon applied")
+                messages.success(self.request, "Coupon applied")
                 return redirect("core:checkout")
 
             except ValueError:
-                messages.error(request, "Coupon invalid")
+                messages.error(self.request, "Coupon invalid")
                 return redirect("core:checkout")
 
             except ObjectDoesNotExist:
-                messages.error(request, "You do not have any order")
+                messages.error(self.request, "You do not have any order")
                 return redirect("core:home")
     
-    return None
+    

@@ -80,12 +80,32 @@ Order Summary
                     {% endfor %}
 
                     {% if object.total_order_price %}
+                    {% if object.coupon %}
+                    <tr>
+                      <td colspan="4">Coupon: <b>{{ object.coupon.description }}</b></td>
+                      <td style="text-align:right"><b>-${{object.discount_amount }}</b></td>
+                    </tr>
+                    {% endif %}
                     <tr>
                         <td colspan="4"><b>Order Total:</b></td>
-                        <td style="text-align:right"><b>${{object.total_order_price }}</b></td>
+                        <td style="text-align:right"><b>${{object.final_price }}</b></td>
                     </tr>
                     <tr>
                       <td colspan="5">
+                        <!-- Promo code -->
+                        {% if DISPLAY_COUPON_FORM %}
+                        <form class="card p-2 mb-3" method="POST" action="{% url 'core:add-coupon' %}">
+                          {% csrf_token %}
+                          <div class="input-group">
+                            <!-- <input type="text" class="form-control" placeholder="Promo code" aria-label="Recipient's username" aria-describedby="basic-addon2"> -->
+                            {{ couponform.code }}
+                            <div class="input-group-append">
+                              <button class="btn btn-secondary btn-md waves-effect m-0" type="submit">Redeem</button>
+                            </div>
+                          </div>
+                        </form>
+                        {% endif %}
+                        <!-- Promo code -->
                         <a href="{% url 'core:checkout' %}" class="btn btn-warning float-right ml-2">Checkout</a>
                         <a href="{% url 'core:home' %}" class="btn btn-info float-right ml-2">Continue Shopping</a>
                       </td>

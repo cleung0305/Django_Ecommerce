@@ -48,31 +48,31 @@
 #         return 'bar'
 
 
-from time import time
-def timer(func):
-    def wrapper(*args, **kwargs):
-        before = time()
-        result = func(*args, **kwargs)
-        after = time()
-        print('time: ', after - before)
-        return result
-    return wrapper
+# from time import time
+# def timer(func):
+#     def wrapper(*args, **kwargs):
+#         before = time()
+#         result = func(*args, **kwargs)
+#         after = time()
+#         print('time: ', after - before)
+#         return result
+#     return wrapper
 
-n = 5
-def nTimes(func):
-    def wrapper(*args, **kwargs):
-        for _ in range(n):
-            rv = func(*args, **kwargs)
-        return rv
-    return wrapper
+# n = 5
+# def nTimes(func):
+#     def wrapper(*args, **kwargs):
+#         for _ in range(n):
+#             rv = func(*args, **kwargs)
+#         return rv
+#     return wrapper
 
-@nTimes
-@timer
-def add(x, y, a, s, v):
-    print('hi')
-    return x+y+a+s+v
+# @nTimes
+# @timer
+# def add(x, y, a, s, v):
+#     print('hi')
+#     return x+y+a+s+v
 
-print(add(3,6,2,1,4))
+# print(add(3,6,2,1,4))
 
 # from time import sleep
 # def compute():
@@ -125,3 +125,17 @@ print(add(3,6,2,1,4))
 # print(df.head())
 # fig = px.line(df, x = 'AAPL_x', y = 'AAPL_y', title='Apple Share Price Over Time (2014)')
 # fig.show()
+
+# import psycopg2
+
+# with psycopg2.connect(
+#     host='database-20220727.cukgv6q3mgp8.us-east-1.rds.amazonaws.com',
+#     user="postgres",
+#     password="loklok123",
+#     port="5432"
+# ) as conn:
+#     print("connected")
+#     with conn.cursor() as cur:
+#         cur.execute("select version()")
+#         data = cur.fetchone()
+#         print(data)

@@ -101,3 +101,12 @@ LOGIN_REDIRECT_URL = "/"
 #crispy forms
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 STRIPE_SECRET_KEY = "sk_test_4eC39HqLyjWDarjtT1zdp7dc"
+
+#Error message tag
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+    messages.WARNING: 'warning',
+    messages.SUCCESS: 'success',
+    messages.INFO: 'info',
+}

@@ -97,7 +97,7 @@ class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     items = models.ManyToManyField(OrderItem)
     start_date = models.DateTimeField(auto_now_add=True)
-    ordered_date = models.DateTimeField()
+    ordered_date = models.DateTimeField(null=True, blank=True)
     ordered = models.BooleanField(default=False)
     billing_address = models.ForeignKey('BillingAddress', on_delete=models.SET_NULL, blank=True, null=True)
     payment = models.ForeignKey('Payment', on_delete=models.SET_NULL, blank=True, null=True)
@@ -164,7 +164,7 @@ class Payment(models.Model):
 class Coupon(models.Model):
     code = models.CharField(max_length=10)
     amount = models.FloatField(default=10)
-    description = models.CharField(max_length=100, blank=True, null = True)
+    description = models.CharField(max_length=100, default='New Promo!')
 
     def __str__(self):
         return self.code

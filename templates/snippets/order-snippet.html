@@ -32,6 +32,7 @@
     <!-- Cart -->
 
     <!-- Promo code -->
+    {% if DISPLAY_COUPON_FORM %}
     <form class="card p-2" method="POST" action="{% url 'core:add-coupon' %}">
       {% csrf_token %}
       <div class="input-group">
@@ -42,6 +43,7 @@
         </div>
       </div>
     </form>
+    {% endif %}
     <!-- Promo code -->
 
   </div>
