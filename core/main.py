@@ -48,31 +48,33 @@
 #         return 'bar'
 
 
-from time import time
-def timer(func):
-    def wrapper(*args, **kwargs):
-        before = time()
-        result = func(*args, **kwargs)
-        after = time()
-        print('time: ', after - before)
-        return result
-    return wrapper
+#--------------------------------------------------------------
 
-n = 5
-def nTimes(func):
-    def wrapper(*args, **kwargs):
-        for _ in range(n):
-            rv = func(*args, **kwargs)
-        return rv
-    return wrapper
+# from time import time
+# def timer(func):
+#     def wrapper(*args, **kwargs):
+#         before = time()
+#         result = func(*args, **kwargs)
+#         after = time()
+#         print('time: ', after - before)
+#         return result
+#     return wrapper
 
-@nTimes
-@timer
-def add(x, y, a, s, v):
-    print('hi')
-    return x+y+a+s+v
+# n = 5
+# def nTimes(func):
+#     def wrapper(*args, **kwargs):
+#         for _ in range(n):
+#             rv = func(*args, **kwargs)
+#         return rv
+#     return wrapper
 
-print(add(3,6,2,1,4))
+# @nTimes
+# @timer
+# def add(x, y, a, s, v):
+#     print('hi')
+#     return x+y+a+s+v
+
+# print(add(3,6,2,1,4))
 
 # from time import sleep
 # def compute():
@@ -82,6 +84,9 @@ print(add(3,6,2,1,4))
         
 # for i in compute():
 #     print(i)
+
+
+#--------------------------------------------------------------
 
 # import time
 # import requests
@@ -96,6 +101,8 @@ print(add(3,6,2,1,4))
 
 # print(web_content)
 
+
+#--------------------------------------------------------------
 
 #-----getting price from coinbase-----
 # import time
@@ -126,6 +133,9 @@ print(add(3,6,2,1,4))
 # fig = px.line(df, x = 'AAPL_x', y = 'AAPL_y', title='Apple Share Price Over Time (2014)')
 # fig.show()
 
+
+#--------------------------------------------------------------
+
 # import psycopg2
 
 # with psycopg2.connect(
@@ -139,3 +149,66 @@ print(add(3,6,2,1,4))
 #         cur.execute("select version()")
 #         data = cur.fetchone()
 #         print(data)
+
+#--------------------------------------------------------------
+
+# from abc import abstractmethod, ABC
+# from overloading import overload
+# from functools import singledispatchmethod
+# from datetime import date, datetime, time
+
+# class A(ABC):
+#     @abstractmethod
+#     def absA(self):
+#         print("This is abstract method.")
+
+
+# class B(A):
+#     @singledispatchmethod
+#     def absA(self, x: int):
+#         print(f'{x = } is an int.')
+
+#     @absA.register
+#     def absAOverloaded(self, x: str):
+#         print(f'{x = } is a string.')
+        
+#     @absA.register
+#     def absAOverloaded(self, x: date):
+#         print(f"{x.day}-{x.month}-{x.year}")
+
+# class C(A):
+#     @singledispatchmethod
+#     def absA(self, x: int):
+#         print(f"{x = } is an integer")
+
+#     @absA.register
+#     def absAOverloaded(self, x: str):
+#         print(f'{x = } is a string.')
+
+# c = C()
+# c.absA('hello')
+# c.absA(123)
+
+#--------------------------------------------------------------
+
+# class Sample():
+#     def __init__(self):
+#         self.a = 1
+#         self._b = 2
+#         self.__c = 3
+#     def display(self):
+#         print(f"{self.a = } , {self._b = } , {self.__c = }")
+
+# class Sample2(Sample):
+#     def __init__(self):
+#         super().__init__()
+
+# s = Sample()
+# s.display()
+# print(dir(s))
+
+# s2 = Sample2()
+# s2.display()
+# print(dir(s2))
+
+#--------------------------------------------------------------

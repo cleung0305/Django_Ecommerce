@@ -117,7 +117,7 @@ class PaymentView(View):
             }
             return render(self.request, self.template_name, context)
         else:
-            messages.error(self.request, "You do not have a billing address.")
+            messages.error(self.request, "You have not added a billing address.")
             return redirect('core:checkout')
 
     def post(self, *args, **kwargs):
