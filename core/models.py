@@ -36,6 +36,7 @@ class Item(models.Model):
     slug = models.SlugField(blank = True, null = True, unique = True)
     description = models.TextField()
     image = models.ImageField(blank=True, null=True)
+    new = models.BooleanField(default=True)
 
     def __str__(self):
         return self.title
@@ -68,6 +69,8 @@ class Item(models.Model):
         return reverse("core:remove-from-cart", kwargs={
             'slug': self.slug
         }) 
+
+    
 
 class OrderItem(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -103,6 +106,12 @@ class Order(models.Model):
     payment = models.ForeignKey('Payment', on_delete=models.SET_NULL, blank=True, null=True)
     coupon = models.ForeignKey('Coupon', on_delete=models.SET_NULL, blank=True, null=True)
     order_number = models.CharField(max_length=10, null=True, blank=True)
+    being_delivered = models.BooleanField(default=False)
+    received = models.BooleanField(default=False)
+    refund_requested = models.BooleanField(default=False)
+    refund_granted = models.BooleanField(default=False)
+
+
 
     def __str__(self):
         return self.user.username
@@ -114,11 +123,10 @@ class Order(models.Model):
         return total
 
     def discount_amount(self):
-        amount = 0
-        price = self.total_order_price()
         if self.coupon:
-            amount += price * (self.coupon.amount/100)
-        return amount
+            amount = self.total_order_price() * (self.coupon.amount/100)
+            return amount
+        return 0
     
     def total_order_price_with_discount(self):
         return self.total_order_price() - self.discount_amount()
@@ -131,7 +139,7 @@ class Order(models.Model):
     def generate_random_string(self):
         size = 10
         chars = string.ascii_uppercase + string.digits
-        return "".join(random.choice(chars) for _ in range(size))
+        return "".join(random.choices(chars, k=size))
 
     def generate_order_number(self):
         new_num = self.generate_random_string()
@@ -168,3 +176,13 @@ class Coupon(models.Model):
 
     def __str__(self):
         return self.code
+
+
+class Refund(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    reason = models.TextField()
+    accepted = models.BooleanField(default=False)
+    email = models.EmailField()
+
+    def __str__(self):
+        return f"{self.pk}"

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head_title %}
+Request refund
+{% endblock head_title %}
+
+  <!--Main layout-->
+{% block content %}
+  {% comment %} <!--Carousel Wrapper-->
+  {% include 'snippets/carouselWrapper-snippet.html' %}
+  <!--/.Carousel Wrapper--> {% endcomment %}
+
+  <style type="text/css">
+    .price{
+      text-align:right;
+    }
+    .remove-item:hover{
+      color: red;
+    }
+    .add-single-item:hover,
+    .remove-single-item:hover{
+      color: blue;
+    }
+    
+  </style>
+
+  <div class="container pt-3">
+        <div class="table-responsive text-nowrap">
+            <h2>Request Refund</h2>
+        </div>
+  </div>
+
+{% endblock content %}

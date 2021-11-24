@@ -8,7 +8,7 @@ from django.template import RequestContext, Context
 from django.utils import timezone
 from django.contrib import messages
 from .models import *
-from .forms import CheckoutForm, CouponForm
+from .forms import CheckoutForm, CouponForm, RefundForm
 
 import time
 import stripe
@@ -21,10 +21,6 @@ class HomeView(ListView):
     paginate_by = 20
     template_name = "home.html"
 
-    def post(self, request, *args, **kwargs):
-        self.object_list = self.get_queryset()
-        context = self.get_context_data()
-        return render(request, self.template_name, context)
 
 class OrderSummaryView(LoginRequiredMixin, View):
     def get(self,*args, **kwargs):
@@ -199,7 +195,7 @@ def add_to_cart(request, slug):
     order_queryset = Order.objects.filter(user=request.user, ordered=False)
     if order_queryset.exists():
         order = order_queryset[0]
-        #check if order item is in the order
+        # check if order item is in the order
         if order.items.filter(item__slug=item.slug).exists():
             order_item.quantity += 1
             order_item.save()
@@ -214,6 +210,7 @@ def add_to_cart(request, slug):
         order.items.add(order_item)
         messages.info(request, "This item was added to your cart.")
     return redirect("core:product", slug=slug)
+
 
 @login_required
 def add_single_item_to_cart(request, slug):
@@ -238,6 +235,7 @@ def add_single_item_to_cart(request, slug):
     else:
         messages.warning(request, "You do not have any order.")
         return redirect("core:order-summary")
+
 
 @login_required
 def remove_from_cart(request, slug):
@@ -306,12 +304,14 @@ def remove_single_item_from_cart(request, slug):
             messages.info(request, "You do not have any order.")
             return redirect("core:order-summary")
 
+
 def get_coupon(request,code):
     try:
         coupon = Coupon.objects.get(code=code)
         return coupon
     except ObjectDoesNotExist:
         return redirect("core:checkout")
+
 
 class AddCouponView(View):
     def post(self, *args, **kwargs):
@@ -334,4 +334,27 @@ class AddCouponView(View):
                 messages.error(self.request, "You do not have any order")
                 return redirect("core:home")
     
-    
+
+class RequestRefundView(View):
+    def post(self, *args, **kwargs):
+        form = RefundForm(self.request.POST)
+        if form.is_valid():
+            order_number = form.cleaned_data.get('order_number')
+            message = form.cleaned_data.get('message')
+            email = form.cleaned_data.get('email')
+
+            try:
+                order = Order.objects.get(order_number=order_number)
+                order.refund_requested = True
+                order.save()
+                refund = Refund()
+                refund.order = order
+                refund.reason = message
+                refund.emal = email
+                refund.save()
+            except ObjectDoesNotExist:
+                messages.warning(self.request, "Order not found. Please make sure this is the right order number.")
+                return redirect("core:request-refund")
+            finally:
+                messages.info(self.request, "Your request was received.")
+                return redirect("core:request-refund")

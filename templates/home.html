@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load category_template_tags %}
 
 <head>
   <style type="text/css">
@@ -42,23 +43,23 @@ Home
         <!-- Links -->
         <ul class="navbar-nav mr-auto">
           <li class="nav-item category-nav-item active">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{% url 'core:home' %}">
               <span class="clearfix d-none d-sm-inline-block"> All </span>
               <span class="sr-only">(current)</span>
             </a>
           </li>
           <li class="nav-item category-nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{% url 'core:home' category='s' %}">
               <span class="clearfix d-none d-sm-inline-block"> Shirts </span>
             </a>
           </li>
           <li class="nav-item category-nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{% url 'core:home' category='sw' %}">
               <span class="clearfix d-none d-sm-inline-block"> Sport wears </span>
             </a>
           </li>
           <li class="nav-item category-nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{% url 'core:home' category='ow' %}">
               <span class="clearfix d-none d-sm-inline-block"> Outwears </span>
             </a>
           </li>
@@ -83,7 +84,8 @@ Home
       <!--Grid row-->
       <div class="row wow fadeIn">
 
-        {% for item in object_list %}
+
+        {% for item in view.kwargs.category|in_category %}
         
         <!--Grid column-->
         <div class="col-lg-3 col-md-6 mb-4">
@@ -112,7 +114,9 @@ Home
                 <strong>
                   <a href="{{ item.get_absolute_url }}" target="_blank" class="dark-grey-text">{{ item.title }}
                   <br>
+                    {% if item.new %}
                     <span class="badge badge-pill {{ item.get_label_display }}-color">NEW</span>
+                    {% endif %}
                     {% if item.discount_price %}
                       <span class="badge badge-pill info-color">Discount</span>
                     {% endif %}

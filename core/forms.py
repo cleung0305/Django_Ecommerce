@@ -66,3 +66,9 @@ class CouponForm(forms.Form):
         'aria-label':'Recipient\'s username',
         'aria-describedby':'basic-addon2'
     }))
+
+
+class RefundForm(forms.Form):
+    order_number = forms.CharField()
+    message = forms.Textarea()
+    email = forms.EmailField()

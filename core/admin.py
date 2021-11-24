@@ -1,9 +1,31 @@
 from django.contrib import admin
-from .models import Item, OrderItem, Order, Payment, Coupon, BillingAddress
+from .models import Item, OrderItem, Order, Payment, Coupon, BillingAddress, Refund
 # Register your models here.
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['user', 'ordered', 'start_date', 'final_price']
+    list_display = ['user', 
+                    'order_number',
+                    'ordered', 
+                    'start_date', 
+                    'final_price',
+                    'being_delivered',
+                    'received',
+                    'refund_requested',
+                    'refund_granted',
+                    'billing_address',
+                    'payment',
+                    'coupon']
+    list_display_links = ['user',
+                        'billing_address',
+                        'payment',
+                        'coupon']
+    list_filter = [ 'ordered', 
+                    'being_delivered',
+                    'received',
+                    'refund_requested',
+                    'refund_granted']
+    search_fields = ['user__username',
+                    'order_number']
 
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ['item_detail', 'ordered']
