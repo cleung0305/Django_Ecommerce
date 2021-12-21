@@ -20,6 +20,11 @@ LABEL_CHOICES = (
     ('I', 'info')
 )
 
+ADDRESS_CHOICES = (
+    ('B', 'Billing'),
+    ('S', 'Shipping'),
+)
+
 STATES_CHOICES = (
     ("Alabama","Alabama"),("Alaska","Alaska"),("Arizona","Arizona"),("Arkansas","Arkansas"),("California","California"),("Colorado","Colorado"),("Connecticut","Connecticut"),("Delaware","Delaware"),("Florida","Florida"),("Georgia","Georgia"),("Hawaii","Hawaii"),("Idaho","Idaho"),("Illinois","Illinois"),("Indiana","Indiana"),("Iowa","Iowa"),("Kansas","Kansas"),("Kentucky","Kentucky"),("Louisiana","Louisiana"),("Maine","Maine"),("Maryland","Maryland"),("Massachusetts","Massachusetts"),("Michigan","Michigan"),("Minnesota","Minnesota"),("Mississippi","Mississippi"),("Missouri","Missouri"),("Montana","Montana"),("Nebraska","Nebraska"),("Nevada","Nevada"),("New Hampshire","New Hampshire"),("New Jersey","New Jersey"),("New Mexico","New Mexico"),("New York","New York"),("North Carolina","North Carolina"),("North Dakota","North Dakota"),("Ohio","Ohio"),("Oklahoma","Oklahoma"),("Oregon","Oregon"),("Pennsylvania","Pennsylvania"),("Rhode Island","Rhode Island"),("South Carolina","South Carolina"),("South Dakota","South Dakota"),("Tennessee","Tennessee"),("Texas","Texas"),("Utah","Utah"),("Vermont","Vermont"),("Virginia","Virginia"),("Washington","Washington"),("West Virginia","West Virginia"),("Wisconsin","Wisconsin"),("Wyoming","Wyoming")
     )
@@ -37,6 +42,9 @@ class Item(models.Model):
     description = models.TextField()
     image = models.ImageField(blank=True, null=True)
     new = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['price']
 
     def __str__(self):
         return self.title
@@ -102,7 +110,8 @@ class Order(models.Model):
     start_date = models.DateTimeField(auto_now_add=True)
     ordered_date = models.DateTimeField(null=True, blank=True)
     ordered = models.BooleanField(default=False)
-    billing_address = models.ForeignKey('BillingAddress', on_delete=models.SET_NULL, blank=True, null=True)
+    billing_address = models.ForeignKey('Address', related_name="billing_address", on_delete=models.SET_NULL, blank=True, null=True)
+    shipping_address = models.ForeignKey('Address', related_name="shipping_address", on_delete=models.SET_NULL, blank=True, null=True)
     payment = models.ForeignKey('Payment', on_delete=models.SET_NULL, blank=True, null=True)
     coupon = models.ForeignKey('Coupon', on_delete=models.SET_NULL, blank=True, null=True)
     order_number = models.CharField(max_length=10, null=True, blank=True)
@@ -147,18 +156,23 @@ class Order(models.Model):
             new_num = self.generate_random_string()
         return new_num
 
-class BillingAddress(models.Model):
+class Address(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     email = models.EmailField(max_length=200, null=True)
     street_address = models.CharField(max_length=100)
     apartment_address = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
     country = CountryField(multiple=False)
-    states = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
     zip_address = models.CharField(max_length=100)
+    address_type = models.CharField(choices=ADDRESS_CHOICES, max_length=1)
+    default = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username 
+
+    class Meta:
+        verbose_name_plural = "Addresses"
 
 class Payment(models.Model):
     stripe_charge_id = models.CharField(max_length=50)

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block head_title %}
 Request refund
@@ -11,24 +12,16 @@ Request refund
   {% include 'snippets/carouselWrapper-snippet.html' %}
   <!--/.Carousel Wrapper--> {% endcomment %}
 
-  <style type="text/css">
-    .price{
-      text-align:right;
-    }
-    .remove-item:hover{
-      color: red;
-    }
-    .add-single-item:hover,
-    .remove-single-item:hover{
-      color: blue;
-    }
-    
-  </style>
-
   <div class="container pt-3">
         <div class="table-responsive text-nowrap">
             <h2>Request Refund</h2>
         </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
   </div>
 
 {% endblock content %}

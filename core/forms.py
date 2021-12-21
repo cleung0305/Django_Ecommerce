@@ -25,38 +25,49 @@ class CheckoutForm(forms.Form):
         'class':'form-control'
     }), required=False)
 
-    street_address = forms.CharField(widget=forms.TextInput(attrs={
-            'id':'address',
-            'class':'form-control'
-        }), required=True)
-    
-    apartment_address = forms.CharField(required=False, widget=forms.TextInput(attrs={
-            'id':'address-2',
-            'class':'form-control'
-        }))
-
-    city = forms.CharField(widget=forms.TextInput(attrs={
+    shipping_address = forms.CharField(required=False)
+    shipping_address2 = forms.CharField(required=False)
+    shipping_city = forms.CharField(widget=forms.TextInput(attrs={
             'id':'city',
             'class':'form-control'
-        }), required=True)
-    
-    country = CountryField(blank_label='(select country)').formfield(widget=forms.Select(attrs={
+        }), required=False)
+    shipping_country = CountryField(blank_label='(select country)').formfield(
+        required=False,
+        widget=forms.Select(attrs={
             'class':'custom-select d-block w-100',
             'id':'country'
         }))
-    
-    states = forms.ChoiceField(choices=STATES_CHOICES, widget=forms.Select(attrs={
+    shipping_state = forms.ChoiceField(choices=STATES_CHOICES, widget=forms.Select(attrs={
             'class':'custom-select d-block w-100',
             'id':'state'
         }))
-    
-    zip_address = forms.CharField(widget=forms.TextInput(attrs={
-            'id':'zip',
-            'class':'form-control'
-        }))
+    shipping_zip = forms.CharField(required=False)
 
-    same_shipping_address = forms.BooleanField(required=False)
-    save_info = forms.BooleanField(required=False)
+
+
+
+    billing_address = forms.CharField(required=False)
+    billing_address2 = forms.CharField(required=False)
+    billing_city = forms.CharField(widget=forms.TextInput(attrs={
+            'id':'city',
+            'class':'form-control'
+        }), required=False)
+    billing_country = CountryField(blank_label='(select country)').formfield(
+        required=False,
+        widget=forms.Select(attrs={
+            'class':'custom-select d-block w-100',
+            'id':'country'
+        }))
+    billing_state = forms.ChoiceField(choices=STATES_CHOICES, widget=forms.Select(attrs={
+            'class':'custom-select d-block w-100',
+            'id':'state'
+        }))
+    billing_zip = forms.CharField(required=False)
+
+    set_default_shipping = forms.BooleanField(required=False)
+    use_default_shipping = forms.BooleanField(required=False)
+    same_billing_address = forms.BooleanField(required=False)
+    
     payment_option = forms.ChoiceField(widget=forms.RadioSelect(), choices=PAYMENT_CHOICES)
 
 class CouponForm(forms.Form):
@@ -70,5 +81,7 @@ class CouponForm(forms.Form):
 
 class RefundForm(forms.Form):
     order_number = forms.CharField()
-    message = forms.Textarea()
+    message = forms.CharField(widget=forms.Textarea(attrs={
+        'rows': '4'
+    }))
     email = forms.EmailField()

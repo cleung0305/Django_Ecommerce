@@ -75,7 +75,7 @@ class CheckoutView(View):
 
                 # payment_option = form.cleaned_data.get('payment_option')
                 payment_option = data['payment_option']
-                billing_address = BillingAddress(
+                billing_address = Address(
                     user=self.request.user,
                     email = data['email'],
                     street_address=data['street_address'],
@@ -83,7 +83,8 @@ class CheckoutView(View):
                     city=data['city'],
                     country=data['country'],
                     states=data['states'],
-                    zip_address=data['zip_address']
+                    zip_address=data['zip_address'],
+                    address_type="B"
                 )
                 billing_address.save()
                 order.billing_address = billing_address
@@ -336,6 +337,15 @@ class AddCouponView(View):
     
 
 class RequestRefundView(View):
+    template_name = "request-refund.html"
+
+    def get(self, *args, **kwargs):
+        form = RefundForm()
+        context= {
+            'form': form
+        }
+        return render(self.request, self.template_name, context)
+
     def post(self, *args, **kwargs):
         form = RefundForm(self.request.POST)
         if form.is_valid():
@@ -352,9 +362,9 @@ class RequestRefundView(View):
                 refund.reason = message
                 refund.emal = email
                 refund.save()
+
+                messages.info(self.request, "Your request was received.")
+                return redirect("core:request-refund")
             except ObjectDoesNotExist:
                 messages.warning(self.request, "Order not found. Please make sure this is the right order number.")
-                return redirect("core:request-refund")
-            finally:
-                messages.info(self.request, "Your request was received.")
                 return redirect("core:request-refund")
