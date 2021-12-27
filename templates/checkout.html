@@ -59,7 +59,7 @@
 
               <h3>Shipping Address</h3>
 
-              <div>
+              <div class="" id="shipping_form">
 
                 <!--address-->
                 <div class="md-form mb-5">
@@ -132,10 +132,12 @@
 
               </div>
 
+              {% if default_shipping_address %}
               <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" id="use_default_shipping" name="use_default_shipping">
-                <label class="custom-control-label" for="use_default_shipping">Use default shipping address</label>
+                <label class="custom-control-label" for="use_default_shipping">Use default shipping address: {{ default_shipping_address|truncatechars:10 }}</label>
               </div>
+              {% endif %}
 
 
               <hr>
@@ -147,7 +149,7 @@
                 <label class="custom-control-label" for="same_billing_address">Billing address is the same as my shipping address</label>
               </div>
 
-              <div class="hideable_billing_form">
+              <div class="" id="billing_form">
                 <!--email-->
                 <div class="md-form mb-5">
                   {{ form.email }}

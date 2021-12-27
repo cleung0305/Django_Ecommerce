@@ -18,4 +18,20 @@
     $("#alert").fadeTo(4000, 500).slideUp(500, function(){
             $("#alert").slideUp(500);
         });
+
+    $("#same_billing_address").change(function(){
+          if($(this).is(":checked")) {
+              $('#billing_form').addClass("hideable_form");
+          } else {
+              $('#billing_form').removeClass("hideable_form");
+          }
+      });
+
+    $("#use_default_shipping").change(function(){
+        if($(this).is(":checked")) {
+            $('#shipping_form').addClass("hideable_form");
+        } else {
+            $('#shipping_form').removeClass("hideable_form");
+        }
+    });
   </script>

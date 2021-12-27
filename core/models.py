@@ -160,7 +160,7 @@ class Address(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     email = models.EmailField(max_length=200, null=True)
     street_address = models.CharField(max_length=100)
-    apartment_address = models.CharField(max_length=100)
+    apartment_address = models.CharField(max_length=100, blank=True)
     city = models.CharField(max_length=100)
     country = CountryField(multiple=False)
     state = models.CharField(max_length=100)
@@ -169,7 +169,12 @@ class Address(models.Model):
     default = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.user.username 
+        return f"{self.street_address}, {self.state}"
+
+    def is_valid(self):
+        if self.street_address == "":
+            return False
+        return True
 
     class Meta:
         verbose_name_plural = "Addresses"

@@ -9,6 +9,8 @@ from django.utils import timezone
 from django.contrib import messages
 from .models import *
 from .forms import CheckoutForm, CouponForm, RefundForm
+from .exception import ShippingAddressNotValidError, BillingAddressNotValidError
+
 
 import time
 import stripe
@@ -59,6 +61,19 @@ class CheckoutView(View):
                 'order':order,
                 'DISPLAY_COUPON_FORM': True
             }
+            #check if user has default shipping address
+            shipping_address_qs = Address.objects.filter(
+                user=self.request.user,
+                address_type="S",
+                default=True
+            )
+
+            if shipping_address_qs:
+                self.context.update({'default_shipping_address': shipping_address_qs[0]})
+
+            print(order.billing_address)
+
+            
             return render(self.request, self.template_name, self.context)
         except:
             messages.error(self.request, 'You do not have any order')
@@ -69,28 +84,59 @@ class CheckoutView(View):
         try:
             order = Order.objects.get(user=self.request.user, ordered=False)
             if form.is_valid():
-                data = form.cleaned_data
-                # same_shipping_address = form.cleaned_data.get('same_shipping_address')
-                # save_info = form.cleaned_data.get('save_info')
 
-                # payment_option = form.cleaned_data.get('payment_option')
-                payment_option = data['payment_option']
-                billing_address = Address(
-                    user=self.request.user,
-                    email = data['email'],
-                    street_address=data['street_address'],
-                    apartment_address=data['apartment_address'],
-                    city=data['city'],
-                    country=data['country'],
-                    states=data['states'],
-                    zip_address=data['zip_address'],
-                    address_type="B"
-                )
+                use_default_shipping = form.cleaned_data.get("use_default_shipping")
+                if use_default_shipping: #user uses default shipping address
+                    print("using default shipping address")
+                    shipping_address_qs = Address.objects.filter(
+                        user=self.request.user,
+                        address_type="S",
+                        default=True
+                    )
+                    if shipping_address_qs:
+                        shipping_address = shipping_address_qs[0]
+                        if not shipping_address.is_valid(): raise ShippingAddressNotValidError
+                    else: 
+                        messages.info(self.request, "No default shipping address available")
+                        return redirect("core:checkout")
+
+                else: #User entering new shipping address
+                    shipping_address = get_address(self.request.user, form, "S")
+                    if not shipping_address.is_valid(): raise ShippingAddressNotValidError
+
+                set_default_shipping = form.cleaned_data.get("set_default_shipping") #set shipping address as default
+                if set_default_shipping:
+                    shipping_address.default = True
+                    shipping_address_qs = Address.objects.filter(
+                        user=self.request.user,
+                        address_type="S",
+                        default=True
+                    )
+                    if shipping_address_qs:
+                        shipping_address_qs[0].default = False
+                        shipping_address_qs[0].save()
+                    messages.info(self.request, "Shipping address has been set to default")
+
+                shipping_address.save() #save shipping address
+
+                same_billing_address = form.cleaned_data.get('same_billing_address')
+                if same_billing_address:
+                    billing_address = shipping_address
+                    billing_address.pk = None
+                    billing_address.save()
+                    billing_address.address_type = "B"
+                    billing_address.default = False
+                    if not billing_address.is_valid(): raise BillingAddressNotValidError
+                else:
+                    billing_address = get_address(self.request.user, form, "B")
+                    if not billing_address.is_valid(): raise BillingAddressNotValidError
+                    
                 billing_address.save()
+                order.shipping_address = shipping_address
                 order.billing_address = billing_address
                 order.save()
                 
-                print(form.cleaned_data)
+                payment_option = form.cleaned_data.get('payment_option')
                 if payment_option == 'C':
                     return redirect('core:payment', payment_option = 'Card')
                 elif payment_option == 'P':
@@ -101,13 +147,19 @@ class CheckoutView(View):
         except ObjectDoesNotExist:
             messages.warning(self.request, "You do not have an active order.")
             return redirect("/")
+        except ShippingAddressNotValidError:
+            messages.warning(self.request, "Your Shipping Address is invalid.")
+            return redirect("core:checkout")
+        except BillingAddressNotValidError:
+            messages.warning(self.request, "Your Billing Address is invalid.")
+            return redirect("core:checkout")
 
 class PaymentView(View):
     template_name = 'payment.html'
 
     def get(self, *args, **kwargs):
         order = Order.objects.get(user=self.request.user, ordered=False)
-        if order.billing_address:
+        if order.billing_address.is_valid() and order.shipping_address.is_valid():
             context = {
                 'order':order,
                 'DISPLAY_COUPON_FORM': False
@@ -368,3 +420,29 @@ class RequestRefundView(View):
             except ObjectDoesNotExist:
                 messages.warning(self.request, "Order not found. Please make sure this is the right order number.")
                 return redirect("core:request-refund")
+
+def get_address(the_user, form, add_type: str):
+    if add_type == "S":
+        return Address(
+                    user=the_user,
+                    email = form.cleaned_data.get('email'),
+                    street_address=form.cleaned_data.get('shipping_address'),
+                    apartment_address=form.cleaned_data.get('shipping_address2'),
+                    city=form.cleaned_data.get('shipping_city'),
+                    country=form.cleaned_data.get('shipping_country'),
+                    state=form.cleaned_data.get('shipping_state'),
+                    zip_address=form.cleaned_data.get('shipping_zip'),
+                    address_type=add_type
+                )
+    if add_type == "B":
+        return Address(
+                    user=the_user,
+                    email = form.cleaned_data.get('email'),
+                    street_address=form.cleaned_data.get('billing_address'),
+                    apartment_address=form.cleaned_data.get('billing_address2'),
+                    city=form.cleaned_data.get('billing_city'),
+                    country=form.cleaned_data.get('billing_country'),
+                    state=form.cleaned_data.get('billing_state'),
+                    zip_address=form.cleaned_data.get('billing_zip'),
+                    address_type=add_type
+                ) 
