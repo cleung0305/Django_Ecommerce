@@ -260,3 +260,23 @@
   <!--Main layout-->
 
 {% endblock content %}
+
+{% block extra_scripts %}
+  <script>
+    $("#same_billing_address").change(function(){
+          if($(this).is(":checked")) {
+              $('#billing_form').hide();
+          } else {
+              $('#billing_form').show();
+          }
+      });
+
+    $("#use_default_shipping").change(function(){
+        if($(this).is(":checked")) {
+            $('#shipping_form').hide();
+        } else {
+            $('#shipping_form').show();
+        }
+    });
+  </script>
+{% endblock extra_scripts %}

@@ -1,3 +1,5 @@
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.conf import settings
 from django.db import models
 from django.shortcuts import reverse
@@ -29,7 +31,15 @@ STATES_CHOICES = (
     ("Alabama","Alabama"),("Alaska","Alaska"),("Arizona","Arizona"),("Arkansas","Arkansas"),("California","California"),("Colorado","Colorado"),("Connecticut","Connecticut"),("Delaware","Delaware"),("Florida","Florida"),("Georgia","Georgia"),("Hawaii","Hawaii"),("Idaho","Idaho"),("Illinois","Illinois"),("Indiana","Indiana"),("Iowa","Iowa"),("Kansas","Kansas"),("Kentucky","Kentucky"),("Louisiana","Louisiana"),("Maine","Maine"),("Maryland","Maryland"),("Massachusetts","Massachusetts"),("Michigan","Michigan"),("Minnesota","Minnesota"),("Mississippi","Mississippi"),("Missouri","Missouri"),("Montana","Montana"),("Nebraska","Nebraska"),("Nevada","Nevada"),("New Hampshire","New Hampshire"),("New Jersey","New Jersey"),("New Mexico","New Mexico"),("New York","New York"),("North Carolina","North Carolina"),("North Dakota","North Dakota"),("Ohio","Ohio"),("Oklahoma","Oklahoma"),("Oregon","Oregon"),("Pennsylvania","Pennsylvania"),("Rhode Island","Rhode Island"),("South Carolina","South Carolina"),("South Dakota","South Dakota"),("Tennessee","Tennessee"),("Texas","Texas"),("Utah","Utah"),("Vermont","Vermont"),("Virginia","Virginia"),("Washington","Washington"),("West Virginia","West Virginia"),("Wisconsin","Wisconsin"),("Wyoming","Wyoming")
     )
 
-# Create your models here.
+class UserProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
+    stripe_customer_id = models.CharField(max_length=50, default="00000", blank=True, null=True)
+    one_click_purchasing = models.BooleanField(blank=True, null=True)
+    profile_picture = models.ImageField(blank=True, null=True, default="default.jpg")
+
+    def __str__(self):
+        return f"Profile of user: {self.user.username}"
+
 class Item(models.Model):
     """Single Item object. contains the item's title, price, category, etc...
     """
@@ -157,7 +167,7 @@ class Order(models.Model):
         return new_num
 
 class Address(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="address")
     email = models.EmailField(max_length=200, null=True)
     street_address = models.CharField(max_length=100)
     apartment_address = models.CharField(max_length=100, blank=True)
@@ -205,3 +215,9 @@ class Refund(models.Model):
 
     def __str__(self):
         return f"{self.pk}"
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL, dispatch_uid="create_userprofile")
+def userprofile_receiver(sender, instance, created, *args, **kwargs):
+    if created:
+        userprofile = UserProfile.objects.create(user=instance)
+        userprofile.save()

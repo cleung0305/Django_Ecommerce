@@ -59,10 +59,6 @@
       position:absolute;
     }
 
-    .hideable_form{
-      display:None;
-    }
-
   </style>
 </head>
 
@@ -96,16 +92,15 @@
 
   {% block extra_body %}
 
-  {% endblock %}
+  {% endblock extra_body %}
   </main>
-  <!--Main layout-->
-
-  <!--Footer-->
+  
   {% include 'snippets/footer-snippet.html' %}
-  <!--Footer-->
 
-  <!-- SCRIPTS -->
   {% include 'scripts.html' %}
+
+  {% block extra_scripts %}
+  {% endblock extra_scripts %}
 </body>
 
 </html>

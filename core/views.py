@@ -158,16 +158,32 @@ class PaymentView(View):
     template_name = 'payment.html'
 
     def get(self, *args, **kwargs):
-        order = Order.objects.get(user=self.request.user, ordered=False)
-        if order.billing_address.is_valid() and order.shipping_address.is_valid():
-            context = {
-                'order':order,
-                'DISPLAY_COUPON_FORM': False
-            }
-            return render(self.request, self.template_name, context)
-        else:
-            messages.error(self.request, "You have not added a billing address.")
-            return redirect('core:checkout')
+        try:
+            order = Order.objects.get(user=self.request.user, ordered=False)
+            if order.billing_address.is_valid() and order.shipping_address.is_valid():
+                context = {
+                    'order':order,
+                    'DISPLAY_COUPON_FORM': False
+                }
+                userprofile = self.request.user.profile
+                if userprofile.one_click_purchasing:
+                    cards = stripe.Customer.list_sources(
+                        userprofile.stripe_customer_id,
+                        limit=3,
+                        object='card'
+                    )
+                    card_list = cards['data']
+                    if len(card_list) > 0:
+                        self.context.update({
+                            'card':card_list[0]
+                        })
+                return render(self.request, self.template_name, context)
+            else:
+                messages.error(self.request, "You have not added a billing address.")
+                return redirect('core:checkout')
+        except:
+            messages.error(self.request, "You do not have an order")
+            return redirect("core:home")
 
     def post(self, *args, **kwargs):
         order = Order.objects.get(user=self.request.user, ordered=False)
