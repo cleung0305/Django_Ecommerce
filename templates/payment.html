@@ -161,6 +161,10 @@
     }
   }
 
+  .current-card-form{
+    display: none;
+  }
+
 </style>
 {% endblock extra_head %}
 
@@ -180,20 +184,52 @@
           <h4 class="d-flex justify-content-between align-items-center mb-3">
             <span class="text-muted">Payment Information</span>
           </h4>
-            <form action="." method="post" id="stripe-form">
-              {% csrf_token %}
-              <label for="card-element">
-                Credit or debit card
-              </label>
-              <div id="card-element">
-                <!-- A Stripe Element will be inserted here.. -->
+          <div class="card">
+
+            {% if card %}
+            <div style="padding: 5px 30px;" class="mt-2 mb-2">
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" name="use_default_card" id="use_default_card">
+                <label class="custom-control-label" for="use_default_card">Use Default Card: 
+                  **** **** **** {{ card.last4 }}
+                  <span>Exp: {{ card.exp_month }}/{{ card.exp_year }}</span>
+                </label>
               </div>
-              <button id="payBtn">
-                <span id="button-text">Pay now</span>
-              </button>
-              <!-- Used to display Element errors. -->
-              <div id="card-errors" role="alert"></div>
-            </form>
+            </div>
+            {% endif %}
+
+            <div class="current-card-form">
+              <form action="." method="post" class="stripe-form">
+                {% csrf_token %}
+                <input type="hidden" name="use_default" value="true">
+                <button id="payBtn">
+                  <span id="button-text">Pay now</span>
+                </button>
+              </form>
+            </div>
+
+            <div class="new-card-form">
+              <form action="." method="post" id="stripe-form">
+                {% csrf_token %}
+                <label for="card-element">
+                  Credit or debit card
+                </label>
+                <div id="card-element">
+                  <!-- A Stripe Element will be inserted here.. -->
+                </div>
+                <button id="payBtn">
+                  <span id="button-text">Pay now</span>
+                </button>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" class="custom-control-input" name="save" id="save_card_info">
+                  <label class="custom-control-label" for="save_card_info">Save for future purchases</label>
+                </div>
+                <!-- Used to display Element errors. -->
+                <div id="card-errors" role="alert"></div>
+              </form>
+            </div>
+
+          </div>
         </div>
 
         {% include "snippets/order-snippet.html" %}
@@ -205,7 +241,10 @@
     </div>
   </main>
   <!--Main layout-->
-  
+{% endblock content %}
+
+{% block extra_scripts %}
+
   <script src="https://js.stripe.com/v3/"></script>
   <script>
 
@@ -276,6 +315,19 @@
       form.submit();
     }
 
+    var currentCardForm = $('.current-card-form');
+    var newCardForm = $('.new-card-form');
+    var use_default_card = document.querySelector("input[name=use_default_card]");
+    use_default_card.addEventListener('change', function(){
+      if (this.checked){
+        newCardForm.hide();
+        currentCardForm.show();
+      }else {
+        newCardForm.show();
+        currentCardForm.hide();
+      }
+    });
+
     // var successElement = document.getElementById('stripe-token-handler');
     // document.querySelector('.wrapper').addEventListener('click', function() {
     //   successElement.className = 'isHidden';
@@ -286,4 +338,4 @@
     //   successElement.querySelector('.token').textContent = token.id;
     // }
   </script>
-{% endblock content %}
+{% endblock extra_scripts %}
